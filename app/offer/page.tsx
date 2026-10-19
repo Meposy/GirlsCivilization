@@ -6,9 +6,6 @@ export default function Offer() {
       <p style={{ marginBottom: '16px' }}>
         Настоящая Публичная оферта (далее — «Оферта») является официальным предложением физического лица, применяющего специальный налоговый режим «Налог на профессиональный доход» (самозанятого), <strong>Петухов В. С.</strong> (далее — «Исполнитель»), заключить договор на оказание услуг на нижеследующих условиях.
       </p>
-      <p style={{ marginBottom: '16px' }}>
-        Полные реквизиты Исполнителя (ФИО, ИНН) доступны на странице <a href="/requisites" style={{ color: '#ff8ec7' }}>Реквизиты</a>.
-      </p>
 
       <h2 style={{ fontSize: '24px', marginTop: '32px', marginBottom: '16px', fontFamily: 'Unbounded' }}>1. Общие положения</h2>
       <p style={{ marginBottom: '16px' }}>1.1. Акцептом настоящей Оферты является оплата Пользователем услуг Исполнителя любым из способов, предложенных на сайте.</p>
@@ -32,7 +29,7 @@ export default function Offer() {
 
       <h2 style={{ fontSize: '24px', marginTop: '32px', marginBottom: '16px', fontFamily: 'Unbounded' }}>5. Контакты Исполнителя</h2>
       <p style={{ marginBottom: '16px' }}>По всем вопросам, связанным с оплатой, возвратом и оказанием услуг, вы можете обратиться по электронной почте: <strong>hello@girlscivilization.ru</strong></p>
-      <p style={{ marginBottom: '16px' }}>Полные реквизиты доступны на странице <a href="/requisites" style={{ color: '#ff8ec7' }}>Реквизиты</a>.</p>
+      <p style={{ marginBottom: '16px' }}>Полные реквизиты (ФИО, ИНН) доступны на странице <a href="/requisites" style={{ color: '#ff8ec7' }}>Реквизиты</a>.</p>
       
       <a href="/" style={{ display: 'inline-block', marginTop: '40px', color: '#ff8ec7', textDecoration: 'underline' }}>← Вернуться на главную</a>
     </div>
