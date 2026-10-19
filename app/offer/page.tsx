@@ -18,7 +18,7 @@ export default function Offer() {
       <h2 style={{ fontSize: '24px', marginTop: '32px', marginBottom: '16px', fontFamily: 'Unbounded' }}>2. Предмет договора</h2>
       <p style={{ marginBottom: '16px' }}>2.1. Исполнитель предоставляет Пользователю доступ к дополнительным внутриигровым возможностям (цифровым товарам) на игровом сервере.</p>
       <p style={{ marginBottom: '16px' }}>2.2. Услуги носят цифровой характер. Перечень услуг и их стоимость указаны на сайте.</p>
-      <p style={{ marginBottom: '16px' }}>2.3. Исполнитель обязуется оказать услуги в течение 24 часов с момента оплаты (обычно — вручную через Telegram).</p>
+      <p style={{ marginBottom: '16px' }}>2.3. Исполнитель обязуется оказать услуги в течение 24 часов с момента оплаты (обычно — вручную).</p>
 
       <h2 style={{ fontSize: '24px', marginTop: '32px', marginBottom: '16px', fontFamily: 'Unbounded' }}>3. Порядок оплаты и возврата</h2>
       <p style={{ marginBottom: '16px' }}>3.1. Оплата производится в российских рублях через платежные системы (ЮKassa, DonationAlerts и др.).</p>
@@ -31,8 +31,8 @@ export default function Offer() {
       <p style={{ marginBottom: '16px' }}>4.3. Исполнитель не несет ответственности за действия третьих лиц (в том числе платежных систем).</p>
 
       <h2 style={{ fontSize: '24px', marginTop: '32px', marginBottom: '16px', fontFamily: 'Unbounded' }}>5. Контакты Исполнителя</h2>
-      <p style={{ marginBottom: '16px' }}>Email: hello@girlscivilization.ru</p>
-      <p style={{ marginBottom: '16px' }}>Telegram: @girlsciv</p>
+      <p style={{ marginBottom: '16px' }}>По всем вопросам, связанным с оплатой, возвратом и оказанием услуг, вы можете обратиться по электронной почте: <strong>hello@girlscivilization.ru</strong></p>
+      <p style={{ marginBottom: '16px' }}>Полные реквизиты доступны на странице <a href="/requisites" style={{ color: '#ff8ec7' }}>Реквизиты</a>.</p>
       
       <a href="/" style={{ display: 'inline-block', marginTop: '40px', color: '#ff8ec7', textDecoration: 'underline' }}>← Вернуться на главную</a>
     </div>
