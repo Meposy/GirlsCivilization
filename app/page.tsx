@@ -52,7 +52,7 @@ export default function Home() {
 
   const PRICE_PER_WEEK = 99;
   const SP_PER_WEEK = 50;
-  const screenshots = ['/screen1.jpg', '/screen2.jpg', '/screen3.jpg', '/screen4.jpg'];
+  const screenshots = ['/screen1.png', '/screen2.png', '/screen3.png', '/screen4.png', '/screen5.png', '/screen6.png', '/screen7.png', '/screen8.png', '/screen9.png', '/screen10.png', '/screen11.png'];
 
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
