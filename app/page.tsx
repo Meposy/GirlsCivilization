@@ -259,7 +259,7 @@ export default function Home() {
                 <div className="guard-item"><span className="gi-icon">🎀</span><h4>Ресурспак обязателен</h4><p>Без него на сервер не попасть. Пак скачается один раз, обновляется автоматически.</p></div>
                 <div className="guard-item"><span className="gi-icon">🚪</span><h4>Случайных людей нет</h4><p>Без пройденной проверки и без ресурспака на сервер не попасть. Мы не пропускаем «на авось».</p></div>
                 <div className="guard-item"><span className="gi-icon">📜</span><h4>Доверие и репутация</h4><p>Активные девушки получают очки доверия и могут стать частью команды.</p></div>
-                <div className="guard-item"><span className="gi-icon">🌙</span><h4>Комфорт и безопасность</h4><p>Мобы не агрятся на девушек, а PvP отключён. Мы делаем всё, чтобы каждая чувствовала себя спокойно.</p></div>
+                <div className="guard-item"><span className="gi-icon">🌙</span><h4>Комфорт и безопасность</h4><p>Мобихи не агрятся на девушек, а PvP отключён. Мы делаем всё, чтобы каждая чувствовала себя спокойно.</p></div>
               </div>
             </div>
           </div>
@@ -272,7 +272,7 @@ export default function Home() {
               <h2>Правила</h2>
               <p className="lead">Всего три правила, которые делают наше комьюнити уютным.</p>
               <ul className="rules-list">
-                <li><span><strong>Уважение прежде всего.</strong> Никакой токсичности, травли, грубости и NSFW.</span></li>
+                <li><span><strong>Уважение прежде всего.</strong> Никакой токсичности, травли, грубости.</span></li>
                 <li><span><strong>Только для девушек.</strong> Проверка при входе — это наша безопасность.</span></li>
                 <li><span><strong>Играй честно.</strong> Без читов, дюпов и гриффинга чужих приватов.</span></li>
               </ul>
