@@ -201,7 +201,7 @@ export default function Home() {
 
         {/* СКРИНШОТЫ */}
         <section id="shots" className="shots">
-          <div className="container"><h2 className="section-title reveal">Как у нас выглядит</h2><p className="section-sub reveal">Немного атмосферы — чтобы ты почувствовала, каково это, ещё до входа.</p></div>
+          <div className="container"><h2 className="section-title reveal">Наш мир</h2><p className="section-sub reveal">Немного атмосферы — чтобы ты почувствовала, каково это, ещё до входа.</p></div>
           <div className="shots-wrap reveal">
             <div className="shots-viewport" style={{ position: 'relative', overflow: 'hidden', borderRadius: '24px', border: '1px solid #4a2e63' }}>
               <div style={{ display: 'flex', transition: 'transform 0.5s ease', transform: `translateX(-${currentSlide * 100}%)` }}>
