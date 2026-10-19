@@ -11,6 +11,29 @@ type Operation = {
   description: string;
 };
 
+// Компонент для красивого тултипа на графике
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    return (
+      <div style={{ background: '#2b1a3d', border: '1px solid #4a2e63', padding: '16px', borderRadius: '12px', color: '#fbeaff', boxShadow: '0 10px 25px rgba(0,0,0,0.5)', maxWidth: '300px' }}>
+        <p style={{ margin: '0 0 8px 0', fontWeight: 'bold', borderBottom: '1px solid #4a2e63', paddingBottom: '8px' }}>Дата: {label}</p>
+        <p style={{ margin: '0 0 12px 0', color: '#ff8ec7', fontWeight: 'bold' }}>Баланс: {new Intl.NumberFormat('ru-RU').format(data.balance)} ₽</p>
+        
+        <div style={{ fontSize: '13px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          {data.opsForDay.map((op: any, i: number) => (
+            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', gap: '10px', color: op.type === 'income' ? '#7be0a0' : '#ff8e8e' }}>
+              <span>{op.category} ({op.description})</span>
+              <span style={{ whiteSpace: 'nowrap', fontWeight: 'bold' }}>{op.type === 'income' ? '+' : '-'}{op.amount} ₽</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+  return null;
+};
+
 export default function Home() {
   const [ipCopied, setIpCopied] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
@@ -54,7 +77,7 @@ export default function Home() {
           return { type: isExpense ? 'expense' : 'income', category, amount, date, description };
         });
 
-        // Считаем общие итоги
+        // Считаем итоги
         let totalIncome = 0;
         let totalExpense = 0;
         parsedOps.forEach((op) => {
@@ -63,11 +86,12 @@ export default function Home() {
         });
         setTotals({ income: totalIncome, expense: totalExpense, balance: totalIncome - totalExpense });
 
-        // Готовим данные для графика (группируем по датам)
+        // Готовим данные для графика (с группировкой операций по дате)
         const grouped = parsedOps.reduce((acc, op) => {
-          if (!acc[op.date]) acc[op.date] = { date: op.date, income: 0, expense: 0 };
+          if (!acc[op.date]) acc[op.date] = { date: op.date, income: 0, expense: 0, opsForDay: [] };
           if (op.type === 'income') acc[op.date].income += op.amount;
           else acc[op.date].expense += op.amount;
+          acc[op.date].opsForDay.push(op);
           return acc;
         }, {} as Record<string, any>);
 
@@ -79,7 +103,7 @@ export default function Home() {
           return { ...grouped[date], balance: runningBalance };
         });
 
-        setOperations(parsedOps.reverse());
+        setOperations(parsedOps.reverse()); // Свежие сверху для таблицы
         setChartData(allChartData);
         setBudgetLoading(false);
       })
@@ -91,9 +115,8 @@ export default function Home() {
     return () => observer.disconnect();
   }, []);
 
-  // Фильтрация графика по времени
   const filteredChartData = timeRange === 'month' 
-    ? chartData.slice(-30) // Упрощенно берем последние 30 записей (дней с операциями)
+    ? chartData.slice(-30) 
     : chartData;
 
   const copyIp = () => {
@@ -120,7 +143,7 @@ export default function Home() {
     <>
       <a className="skip-link" href="#main">К содержанию</a>
 
-      {/* ... НАВИГАЦИЯ ... */}
+      {/* НАВИГАЦИЯ */}
       <nav aria-label="Основная навигация" id="siteNav">
         <div className="container nav-inner">
           <div className="logo">Girls Civilization</div>
@@ -157,7 +180,7 @@ export default function Home() {
       </nav>
 
       <main id="main">
-        {/* ... ГЕРОЙ ... */}
+        {/* ГЕРОЙ */}
         <header className="hero">
           <div className="container">
             <div className="hero-badge">Только для девушек</div>
@@ -176,7 +199,7 @@ export default function Home() {
           </div>
         </header>
 
-        {/* ... СКРИНШОТЫ ... */}
+        {/* СКРИНШОТЫ */}
         <section id="shots" className="shots">
           <div className="container"><h2 className="section-title reveal">Как у нас выглядит</h2><p className="section-sub reveal">Немного атмосферы — чтобы ты почувствовала, каково это, ещё до входа.</p></div>
           <div className="shots-wrap reveal">
@@ -190,7 +213,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ... О СЕРВЕРЕ ... */}
+        {/* О СЕРВЕРЕ */}
         <section id="about">
           <div className="container">
             <h2 className="section-title reveal">Что у нас есть</h2>
@@ -209,7 +232,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ... КАК НАЧАТЬ ... */}
+        {/* КАК НАЧАТЬ */}
         <section id="start">
           <div className="container">
             <h2 className="section-title reveal">Как начать играть</h2>
@@ -224,7 +247,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ... ПРОВЕРКА ... */}
+        {/* ПРОВЕРКА */}
         <section id="guard">
           <div className="container">
             <div className="guard-block reveal">
@@ -242,7 +265,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ... ПРАВИЛА (СОКРАЩЕНЫ ДО 3) ... */}
+        {/* ПРАВИЛА */}
         <section id="rules">
           <div className="container">
             <div className="rules-block reveal">
@@ -257,7 +280,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ... БЮДЖЕТ С ГРАФИКОМ ... */}
+        {/* БЮДЖЕТ С ГРАФИКОМ */}
         <section id="budget">
           <div className="container">
             <div className="budget-block reveal">
@@ -271,7 +294,6 @@ export default function Home() {
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                   
-                  {/* Карточки итогов */}
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
                     <div style={{ background: 'rgba(255,255,255,0.05)', padding: '20px', borderRadius: '16px', border: '1px solid #4a2e63', textAlign: 'center' }}>
                       <div style={{ fontSize: '14px', color: '#c9b3d9', marginBottom: '8px' }}>Получено</div>
@@ -293,7 +315,7 @@ export default function Home() {
                     </div>
                   )}
 
-                  {/* ГРАФИК */}
+                  {/* ГРАФИК С КАСТОМНЫМ ТУЛТИПОМ */}
                   <div style={{ background: 'rgba(255,255,255,0.03)', padding: '20px', borderRadius: '16px', border: '1px solid #4a2e63' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' }}>
                       <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: '#fbeaff' }}>График баланса</h3>
@@ -302,7 +324,7 @@ export default function Home() {
                         <button onClick={() => setTimeRange('all')} style={{ padding: '6px 12px', borderRadius: '8px', border: '1px solid #4a2e63', background: timeRange === 'all' ? '#ff8ec7' : 'transparent', color: timeRange === 'all' ? '#fff' : '#c9b3d9', cursor: 'pointer' }}>Всё время</button>
                       </div>
                     </div>
-                    <div style={{ width: '100%', height: 300 }}>
+                    <div style={{ width: '100%', height: 350 }}>
                       <ResponsiveContainer>
                         <AreaChart data={filteredChartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                           <defs>
@@ -314,18 +336,14 @@ export default function Home() {
                           <CartesianGrid strokeDasharray="3 3" stroke="#362148" />
                           <XAxis dataKey="date" stroke="#c9b3d9" fontSize={12} tickFormatter={(val) => val.slice(5)} />
                           <YAxis stroke="#c9b3d9" fontSize={12} tickFormatter={(val) => `${val} ₽`} />
-                          <Tooltip 
-                            contentStyle={{ background: '#2b1a3d', border: '1px solid #4a2e63', borderRadius: '8px', color: '#fbeaff' }} 
-                            formatter={(value: number) => [`${formatMoney(value)}`, 'Баланс']}
-                            labelFormatter={(label) => `Дата: ${label}`}
-                          />
+                          <Tooltip content={<CustomTooltip />} />
                           <Area type="monotone" dataKey="balance" stroke="#ff8ec7" fillOpacity={1} fill="url(#colorBalance)" />
                         </AreaChart>
                       </ResponsiveContainer>
                     </div>
                   </div>
 
-                  {/* Таблица операций */}
+                  {/* ТАБЛИЦА ОПЕРАЦИЙ */}
                   <div style={{ background: 'rgba(255,255,255,0.03)', padding: '20px', borderRadius: '16px', border: '1px solid #4a2e63', overflowX: 'auto' }}>
                     <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px', color: '#fbeaff' }}>Последние операции</h3>
                     <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
@@ -357,7 +375,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ... СПОНСОР ... */}
+        {/* СПОНСОР */}
         <section id="sponsor">
           <div className="container">
             <div className="sponsor-block reveal">
@@ -377,7 +395,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ... FAQ ... */}
+        {/* FAQ */}
         <section id="faq">
           <div className="container">
             <h2 className="section-title reveal">Частые вопросы</h2>
