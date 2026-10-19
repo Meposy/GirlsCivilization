@@ -191,7 +191,7 @@ export default function Home() {
             <div className="logo">Girls Civilization</div>
             <div className="footer-links">
               <a href="https://t.me/girlsciv" target="_blank" rel="noopener noreferrer">Telegram-канал</a>
-              <a href="mailto:hello@girlscivilization.ru">Почта</a>
+              <a href="mailto:themepyshow@gmail.com">Почта</a>
               <a href="/offer">Оферта</a>
               <a href="/privacy">Конфиденциальность</a>
             </div>
