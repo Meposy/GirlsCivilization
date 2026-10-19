@@ -4,7 +4,7 @@ export default function Offer() {
       <h1 style={{ fontFamily: 'Unbounded', fontSize: '36px', marginBottom: '24px' }}>Публичная оферта</h1>
       
       <p style={{ marginBottom: '16px' }}>
-        Настоящая Публичная оферта (далее — «Оферта») является официальным предложением физического лица, применяющего специальный налоговый режим «Налог на профессиональный доход» (самозанятого), <strong>Петухов В. С.</strong> (далее — «Исполнитель»), заключить договор на оказание услуг на нижеследующих условиях.
+        Настоящая Публичная оферта (далее — «Оферта») является официальным предложением физического лица, применяющего специальный налоговый режим «Налог на профессиональный доход» (самозанятого), <strong>Петухов В. С.</strong> (ИНН: 544601923000) (далее — «Исполнитель»), заключить договор на оказание услуг на нижеследующих условиях.
       </p>
 
       <h2 style={{ fontSize: '24px', marginTop: '32px', marginBottom: '16px', fontFamily: 'Unbounded' }}>1. Общие положения</h2>
@@ -27,9 +27,12 @@ export default function Offer() {
       <p style={{ marginBottom: '16px' }}>4.2. Пользователь обязуется соблюдать правила сервера. При нарушении правил доступ может быть ограничен без возврата средств.</p>
       <p style={{ marginBottom: '16px' }}>4.3. Исполнитель не несет ответственности за действия третьих лиц (в том числе платежных систем).</p>
 
-      <h2 style={{ fontSize: '24px', marginTop: '32px', marginBottom: '16px', fontFamily: 'Unbounded' }}>5. Контакты Исполнителя</h2>
-      <p style={{ marginBottom: '16px' }}>По всем вопросам, связанным с оплатой, возвратом и оказанием услуг, вы можете обратиться по электронной почте: <strong>hello@girlscivilization.ru</strong></p>
-      <p style={{ marginBottom: '16px' }}>Полные реквизиты (ФИО, ИНН) доступны на странице <a href="/requisites" style={{ color: '#ff8ec7' }}>Реквизиты</a>.</p>
+      <h2 style={{ fontSize: '24px', marginTop: '32px', marginBottom: '16px', fontFamily: 'Unbounded' }}>5. Реквизиты и контакты Исполнителя</h2>
+      <p style={{ marginBottom: '8px' }}><strong>ФИО:</strong> Петухов В. С.</p>
+      <p style={{ marginBottom: '8px' }}><strong>ИНН:</strong> 544601923000</p>
+      <p style={{ marginBottom: '8px' }}><strong>Статус:</strong> Самозанятый (плательщик НПД)</p>
+      <p style={{ marginBottom: '8px' }}><strong>Email:</strong> themepyshow@gmail.com</p>
+      <p style={{ marginBottom: '16px' }}>По всем вопросам, связанным с оплатой и возвратом, обращайтесь по указанной почте.</p>
       
       <a href="/" style={{ display: 'inline-block', marginTop: '40px', color: '#ff8ec7', textDecoration: 'underline' }}>← Вернуться на главную</a>
     </div>
