@@ -79,6 +79,7 @@ export default function Home() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [currentYear, setCurrentYear] = useState<number | null>(null);
 
   const [operations, setOperations] = useState<Operation[]>([]);
   const [budgetLoading, setBudgetLoading] = useState(true);
@@ -107,6 +108,10 @@ export default function Home() {
     { src: '/screen10.png', alt: 'Гильдейская казна' },
     { src: '/screen11.png', alt: 'Ночной вид на спавн' },
   ];
+
+  useEffect(() => {
+    setCurrentYear(new Date().getFullYear());
+  }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -641,7 +646,7 @@ export default function Home() {
             </div>
           </div>
           <div className="copyright">
-            <span>©</span> {new Date().getFullYear()} Girls Civilization. Minecraft — торговая марка Mojang AB.
+            <span>©</span> {currentYear ?? ''} Girls Civilization. Minecraft — торговая марка Mojang AB.
           </div>
         </div>
       </footer>
