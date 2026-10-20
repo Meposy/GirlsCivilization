@@ -663,7 +663,7 @@ export default function Home() {
           >
             <button type="button" className="modal-close" onClick={() => setIsModalOpen(false)} aria-label="Закрыть">×</button>
             <h3 id="support-modal-title">Поддержать сервер</h3>
-            <p className="modal-sub">Выбери количество недель. Начать можно с одной — этого уже достаточно.</p>
+            <p className="modal-sub">Выбери количество недель. Роль и SP начислим автоматически после оплаты.</p>
             <div className="weeks-row">
               <button type="button" className="weeks-btn" onClick={() => changeWeeks(-1)} disabled={weeks <= 1} aria-label="Уменьшить количество недель">−</button>
               <div className="weeks-num">{weeks}</div>
