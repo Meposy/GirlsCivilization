@@ -96,17 +96,17 @@ export default function Home() {
   const SP_PER_WEEK = 50;
   const IP = 'mc.girlsciv.run.place';
   const screenshots = [
-    { src: '/screen1.png', alt: 'Уютная деревня на сервере Girls Civilization' },
-    { src: '/screen2.png', alt: 'Гильдейский замок на закате' },
-    { src: '/screen3.png', alt: 'NPC-жительница в цветущем саду' },
-    { src: '/screen4.png', alt: 'Аукцион и торговые лавки' },
-    { src: '/screen5.png', alt: 'Косметические ауры у игроков' },
-    { src: '/screen6.png', alt: 'Защищённый приват с флагами' },
-    { src: '/screen7.png', alt: 'Банк и вклады в экономике сервера' },
-    { src: '/screen8.png', alt: 'Следы шагов и частицы' },
-    { src: '/screen9.png', alt: 'Цветные ники и статусы' },
-    { src: '/screen10.png', alt: 'Гильдейская казна' },
-    { src: '/screen11.png', alt: 'Ночной вид на спавн' },
+    '/screen1.png',
+    '/screen2.png',
+    '/screen3.png',
+    '/screen4.png',
+    '/screen5.png',
+    '/screen6.png',
+    '/screen7.png',
+    '/screen8.png',
+    '/screen9.png',
+    '/screen10.png',
+    '/screen11.png',
   ];
 
   useEffect(() => {
@@ -358,11 +358,11 @@ export default function Home() {
                 className="shots-track"
                 style={{ transform: `translateX(-${currentSlide * 100}%)` }}
               >
-                {screenshots.map((s, i) => (
-                  <div key={s.src} className={`shot ${i === currentSlide ? 'active' : ''}`}>
+                {screenshots.map((src, i) => (
+                  <div key={src} className={`shot ${i === currentSlide ? 'active' : ''}`}>
                     <img
-                      src={s.src}
-                      alt={s.alt}
+                      src={src}
+                      alt=""
                       loading={i === 0 ? 'eager' : 'lazy'}
                       width={1280}
                       height={720}
@@ -491,7 +491,7 @@ export default function Home() {
 
                   {totals.balance < 0 && (
                     <div className="budget-alert">
-                      Сейчас баланс отрицательный — помоги серверу остаться онлайн.
+                      Сейчас баланс отрицательный — нуждаемся в вашей поддержке 😕
                     </div>
                   )}
 
@@ -663,19 +663,7 @@ export default function Home() {
           >
             <button type="button" className="modal-close" onClick={() => setIsModalOpen(false)} aria-label="Закрыть">×</button>
             <h3 id="support-modal-title">Поддержать сервер</h3>
-            <p className="modal-sub">Выбери количество недель. Роль и SP начислим автоматически после оплаты.</p>
-            <div className="weeks-presets">
-              {[1, 4, 12, 26].map((w) => (
-                <button
-                  key={w}
-                  type="button"
-                  className={weeks === w ? 'active' : ''}
-                  onClick={() => setWeeks(w)}
-                >
-                  {w} {pluralizeWeeks(w)}
-                </button>
-              ))}
-            </div>
+            <p className="modal-sub">Выбери количество недель. Начать можно с одной — этого уже достаточно.</p>
             <div className="weeks-row">
               <button type="button" className="weeks-btn" onClick={() => changeWeeks(-1)} disabled={weeks <= 1} aria-label="Уменьшить количество недель">−</button>
               <div className="weeks-num">{weeks}</div>
@@ -687,16 +675,11 @@ export default function Home() {
               <div className="price-detail">{weeks} × {formatMoney(PRICE_PER_WEEK)}</div>
               <div className="sp-total">+{weeks * SP_PER_WEEK} SP</div>
             </div>
-            <a
-              href="https://t.me/girlsciv"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-primary"
-            >
-              Оплата скоро — написать в Telegram
-            </a>
+            <button type="button" className="btn-disabled" disabled>
+              Оплата скоро
+            </button>
             <div className="modal-note">
-              <strong>Как это работает:</strong> оплата и выдача роли — автоматически через ЮKassa. Пока оплата не подключена, напиши нам в Telegram, и мы поможем вручную.
+              <strong>Как это работает:</strong> оплата и выдача роли — автоматически через ЮKassa. Пока оплата не подключена — заходи позже.
             </div>
           </div>
         </div>
