@@ -43,7 +43,7 @@ export default function Offer() {
       <h2 style={{ fontSize: '24px', marginTop: '32px', marginBottom: '16px', fontFamily: 'Unbounded' }}>9. Реквизиты Исполнителя</h2>
       <p style={{ marginBottom: '8px' }}><strong>ИНН:</strong> 544601923000</p>
       <p style={{ marginBottom: '8px' }}><strong>Контактный телефон:</strong> +7 953 808-00-61</p>
-      <p style={{ marginBottom: '8px' }}><strong>Контактный e-mail:</strong> meposysub@gmail.com</p>
+      <p style={{ marginBottom: '8px' }}><strong>Контактный e-mail:</strong> themepyshow@gmail.com</p>
       
       <a href="/" style={{ display: 'inline-block', marginTop: '40px', color: '#ff8ec7', textDecoration: 'underline' }}>← Вернуться на главную</a>
     </div>
