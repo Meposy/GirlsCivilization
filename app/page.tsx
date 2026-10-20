@@ -11,7 +11,6 @@ type Operation = {
   description: string;
 };
 
-// Плюрализация: 1 неделя / 2 недели / 5 недель (учитывает 21, 22, 23, 24)
 const pluralizeWeeks = (n: number) => {
   const mod10 = n % 10;
   const mod100 = n % 100;
@@ -20,7 +19,6 @@ const pluralizeWeeks = (n: number) => {
   return 'недель';
 };
 
-// Красивый тултип графика
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
@@ -82,7 +80,6 @@ export default function Home() {
   const [toastMessage, setToastMessage] = useState('');
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  // Бюджет
   const [operations, setOperations] = useState<Operation[]>([]);
   const [budgetLoading, setBudgetLoading] = useState(true);
   const [budgetError, setBudgetError] = useState<string | null>(null);
@@ -111,7 +108,6 @@ export default function Home() {
     { src: '/screen11.png', alt: 'Ночной вид на спавн' },
   ];
 
-  // Reveal-анимация
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -125,7 +121,6 @@ export default function Home() {
     return () => observer.disconnect();
   }, []);
 
-  // Загрузка бюджета
   useEffect(() => {
     const controller = new AbortController();
 
@@ -140,8 +135,6 @@ export default function Home() {
         const parsedOps: Operation[] = lines.map((line) => {
           const [category, amountStr, date, description] = line.split('|').map((s) => s.trim());
           const rawAmount = parseInt(amountStr) || 0;
-
-          // Если число с минусом — это расход. Если без — доход.
           const isExpense = rawAmount < 0;
           const amount = Math.abs(rawAmount);
 
@@ -154,7 +147,6 @@ export default function Home() {
           };
         });
 
-        // Итоги
         let totalIncome = 0;
         let totalExpense = 0;
         parsedOps.forEach((op) => {
@@ -163,7 +155,6 @@ export default function Home() {
         });
         setTotals({ income: totalIncome, expense: totalExpense, balance: totalIncome - totalExpense });
 
-        // Группировка по дате для графика
         const grouped = parsedOps.reduce((acc, op) => {
           if (!acc[op.date]) acc[op.date] = { date: op.date, income: 0, expense: 0, opsForDay: [] as Operation[] };
           if (op.type === 'income') acc[op.date].income += op.amount;
@@ -181,7 +172,7 @@ export default function Home() {
           return { ...grouped[date], balance: runningBalance };
         });
 
-        setOperations([...parsedOps].reverse()); // свежие сверху
+        setOperations([...parsedOps].reverse());
         setChartData(allChartData);
         setBudgetDate(new Date().toLocaleDateString('ru-RU'));
         setBudgetLoading(false);
@@ -196,7 +187,6 @@ export default function Home() {
     return () => controller.abort();
   }, []);
 
-  // Фильтр графика по реальным датам, а не по количеству точек
   const filteredChartData =
     timeRange === 'month' && chartData.length > 0
       ? (() => {
@@ -226,7 +216,6 @@ export default function Home() {
 
   const formatMoney = (num: number) => new Intl.NumberFormat('ru-RU').format(num) + ' ₽';
 
-  // Escape + фокус-трап для модалки
   const handleModalKeyDown = useCallback((e: KeyboardEvent) => {
     if (e.key === 'Escape') {
       setIsModalOpen(false);
@@ -267,54 +256,8 @@ export default function Home() {
 
   return (
     <>
-      {/* Встроенные стили — без создания новых файлов */}
-      <style jsx global>{`
-        @media (max-width: 640px) {
-          .ops-table thead { display: none; }
-          .ops-table,
-          .ops-table tbody,
-          .ops-table tr,
-          .ops-table td { display: block; width: 100%; }
-          .ops-table tr {
-            border: 1px solid #4a2e63;
-            border-radius: 12px;
-            padding: 12px;
-            margin-bottom: 12px;
-            background: rgba(255, 255, 255, 0.03);
-          }
-          .ops-table td {
-            padding: 6px 0 !important;
-            text-align: left !important;
-            border: none !important;
-          }
-          .ops-table td::before {
-            content: attr(data-label) ': ';
-            color: #c9b3d9;
-            font-weight: normal;
-            margin-right: 6px;
-          }
-          .ops-table td[data-label='Сумма'] {
-            text-align: right !important;
-            font-size: 16px;
-            margin-top: 6px;
-          }
-          .ops-table td[data-label='Сумма']::before { content: none; }
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .shots-viewport [style*='transition'] { transition: none !important; }
-          .reveal { transition: none !important; }
-        }
-        button:focus-visible,
-        a:focus-visible,
-        [tabindex]:focus-visible {
-          outline: 2px solid #ff8ec7;
-          outline-offset: 3px;
-        }
-      `}</style>
-
       <a className="skip-link" href="#main">К содержанию</a>
 
-      {/* НАВИГАЦИЯ */}
       <nav aria-label="Основная навигация">
         <div className="container nav-inner">
           <div className="logo">Girls Civilization</div>
@@ -365,10 +308,9 @@ export default function Home() {
       </nav>
 
       <main id="main">
-        {/* ГЕРОЙ */}
         <header className="hero">
           <div className="container">
-            <div className="hero-badge" style={{ marginBottom: '16px' }}>Только для девушек</div>
+            <div className="hero-badge">Только для девушек</div>
             <div className="online-badge" data-state="online">
               <span className="dot"></span>
               <span>Сервер работает 24/7</span>
@@ -398,7 +340,6 @@ export default function Home() {
           </div>
         </header>
 
-        {/* СКРИНШОТЫ */}
         <section id="shots" className="shots" aria-labelledby="shots-title">
           <div className="container">
             <h2 id="shots-title" className="section-title reveal">Наш мир</h2>
@@ -407,78 +348,42 @@ export default function Home() {
             </p>
           </div>
           <div className="shots-wrap reveal">
-            <div
-              className="shots-viewport"
-              style={{ position: 'relative', overflow: 'hidden', borderRadius: '24px', border: '1px solid #4a2e63' }}
-            >
+            <div className="shots-viewport">
               <div
-                style={{
-                  display: 'flex',
-                  transition: 'transform 0.5s ease',
-                  transform: `translateX(-${currentSlide * 100}%)`,
-                }}
+                className="shots-track"
+                style={{ transform: `translateX(-${currentSlide * 100}%)` }}
               >
                 {screenshots.map((s, i) => (
-                  <img
-                    key={s.src}
-                    src={s.src}
-                    alt={s.alt}
-                    loading={i === 0 ? 'eager' : 'lazy'}
-                    width={1280}
-                    height={720}
-                    style={{ width: '100%', flexShrink: 0, objectFit: 'cover', aspectRatio: '16/9' }}
-                  />
+                  <div key={s.src} className={`shot ${i === currentSlide ? 'active' : ''}`}>
+                    <img
+                      src={s.src}
+                      alt={s.alt}
+                      loading={i === 0 ? 'eager' : 'lazy'}
+                      width={1280}
+                      height={720}
+                    />
+                  </div>
                 ))}
               </div>
-              <button
-                type="button"
-                aria-label="Предыдущий скриншот"
-                onClick={() => goToSlide(-1)}
-                style={{
-                  position: 'absolute', top: '50%', left: '20px', transform: 'translateY(-50%)',
-                  background: 'rgba(0,0,0,0.5)', color: 'white', border: 'none',
-                  borderRadius: '50%', width: '40px', height: '40px', cursor: 'pointer', fontSize: '20px',
-                }}
-              >
-                ‹
-              </button>
-              <button
-                type="button"
-                aria-label="Следующий скриншот"
-                onClick={() => goToSlide(1)}
-                style={{
-                  position: 'absolute', top: '50%', right: '20px', transform: 'translateY(-50%)',
-                  background: 'rgba(0,0,0,0.5)', color: 'white', border: 'none',
-                  borderRadius: '50%', width: '40px', height: '40px', cursor: 'pointer', fontSize: '20px',
-                }}
-              >
-                ›
-              </button>
-              <div
-                aria-hidden="true"
-                style={{
-                  position: 'absolute', bottom: '12px', left: '50%', transform: 'translateX(-50%)',
-                  display: 'flex', gap: '6px',
-                }}
-              >
-                {screenshots.map((_, i) => (
-                  <span
-                    key={i}
-                    style={{
-                      width: i === currentSlide ? '20px' : '8px',
-                      height: '8px',
-                      borderRadius: '4px',
-                      background: i === currentSlide ? '#ff8ec7' : 'rgba(255,255,255,0.4)',
-                      transition: 'all 0.3s ease',
-                    }}
-                  />
-                ))}
-              </div>
+              <button type="button" className="shots-arrow prev" aria-label="Предыдущий скриншот" onClick={() => goToSlide(-1)}>‹</button>
+              <button type="button" className="shots-arrow next" aria-label="Следующий скриншот" onClick={() => goToSlide(1)}>›</button>
+            </div>
+            <div className="shots-dots" role="tablist" aria-label="Скриншоты">
+              {screenshots.map((_, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  role="tab"
+                  aria-selected={i === currentSlide}
+                  aria-label={`Скриншот ${i + 1}`}
+                  className={`shots-dot ${i === currentSlide ? 'active' : ''}`}
+                  onClick={() => setCurrentSlide(i)}
+                />
+              ))}
             </div>
           </div>
         </section>
 
-        {/* О СЕРВЕРЕ */}
         <section id="about" aria-labelledby="about-title">
           <div className="container">
             <h2 id="about-title" className="section-title reveal">Что у нас есть</h2>
@@ -499,7 +404,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* КАК НАЧАТЬ */}
         <section id="start" aria-labelledby="start-title">
           <div className="container">
             <h2 id="start-title" className="section-title reveal">Как начать играть</h2>
@@ -516,7 +420,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ПРОВЕРКА */}
         <section id="guard" aria-labelledby="guard-title">
           <div className="container">
             <div className="guard-block reveal">
@@ -536,7 +439,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ПРАВИЛА */}
         <section id="rules" aria-labelledby="rules-title">
           <div className="container">
             <div className="rules-block reveal">
@@ -551,7 +453,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* БЮДЖЕТ */}
         <section id="budget" aria-labelledby="budget-title">
           <div className="container">
             <div className="budget-block reveal">
@@ -561,106 +462,59 @@ export default function Home() {
               </p>
 
               {budgetLoading ? (
-                <div style={{ textAlign: 'center', padding: '40px', color: '#c9b3d9' }}>Загрузка бюджета…</div>
+                <div className="budget-loading">Загрузка бюджета…</div>
               ) : budgetError ? (
-                <div style={{ textAlign: 'center', padding: '40px', color: '#ff8e8e' }}>{budgetError}</div>
+                <div className="budget-error">{budgetError}</div>
               ) : operations.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '40px', color: '#c9b3d9' }}>Пока нет операций для отображения.</div>
+                <div className="budget-loading">Пока нет операций для отображения.</div>
               ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                  <div
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))',
-                      gap: '16px',
-                    }}
-                  >
-                    <div style={{ background: 'rgba(255,255,255,0.05)', padding: '20px', borderRadius: '16px', border: '1px solid #4a2e63', textAlign: 'center' }}>
-                      <div style={{ fontSize: '14px', color: '#c9b3d9', marginBottom: '8px' }}>Получено</div>
-                      <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#7be0a0' }}>{formatMoney(totals.income)}</div>
+                <>
+                  <div className="budget-grid">
+                    <div className="budget-card income">
+                      <div className="bc-label">Получено</div>
+                      <div className="bc-value">{formatMoney(totals.income)}</div>
                     </div>
-                    <div style={{ background: 'rgba(255,255,255,0.05)', padding: '20px', borderRadius: '16px', border: '1px solid #4a2e63', textAlign: 'center' }}>
-                      <div style={{ fontSize: '14px', color: '#c9b3d9', marginBottom: '8px' }}>Потрачено</div>
-                      <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#ff8e8e' }}>{formatMoney(totals.expense)}</div>
+                    <div className="budget-card expense">
+                      <div className="bc-label">Потрачено</div>
+                      <div className="bc-value">{formatMoney(totals.expense)}</div>
                     </div>
-                    <div style={{ background: 'rgba(255,255,255,0.05)', padding: '20px', borderRadius: '16px', border: '1px solid #4a2e63', textAlign: 'center' }}>
-                      <div style={{ fontSize: '14px', color: '#c9b3d9', marginBottom: '8px' }}>В запасе</div>
-                      <div style={{ fontSize: '28px', fontWeight: 'bold', color: totals.balance >= 0 ? '#ffd76e' : '#ff8e8e' }}>
-                        {formatMoney(totals.balance)}
-                      </div>
+                    <div className={`budget-card balance ${totals.balance < 0 ? 'negative' : ''}`}>
+                      <div className="bc-label">В запасе</div>
+                      <div className="bc-value">{formatMoney(totals.balance)}</div>
                     </div>
                   </div>
 
                   {totals.balance < 0 && (
-                    <div
-                      style={{
-                        background: 'rgba(255,142,142,0.1)',
-                        padding: '16px',
-                        borderRadius: '12px',
-                        border: '1px solid rgba(255,142,142,0.3)',
-                        color: '#ff8e8e',
-                        textAlign: 'center',
-                      }}
-                    >
+                    <div className="budget-alert">
                       Сейчас баланс отрицательный — помоги серверу остаться онлайн.
                     </div>
                   )}
 
-                  {/* ГРАФИК */}
-                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '20px', borderRadius: '16px', border: '1px solid #4a2e63' }}>
-                    <div
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        marginBottom: '16px',
-                        flexWrap: 'wrap',
-                        gap: '10px',
-                      }}
-                    >
+                  <div className="budget-chart-wrap">
+                    <div className="budget-chart-head">
                       <div>
-                        <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: '#fbeaff', margin: 0 }}>График баланса</h3>
-                        {budgetDate && (
-                          <div style={{ fontSize: '12px', color: '#c9b3d9', marginTop: '4px' }}>
-                            данные на {budgetDate}
-                          </div>
-                        )}
+                        <h3 className="budget-chart-title">График баланса</h3>
+                        {budgetDate && <div className="budget-chart-date">данные на {budgetDate}</div>}
                       </div>
-                      <div style={{ display: 'flex', gap: '8px' }}>
+                      <div className="budget-range">
                         <button
                           type="button"
+                          className={timeRange === 'month' ? 'active' : ''}
                           onClick={() => setTimeRange('month')}
-                          style={{
-                            padding: '6px 12px',
-                            borderRadius: '8px',
-                            border: '1px solid #4a2e63',
-                            background: timeRange === 'month' ? '#ff8ec7' : 'transparent',
-                            color: timeRange === 'month' ? '#fff' : '#c9b3d9',
-                            cursor: 'pointer',
-                          }}
                         >
                           Месяц
                         </button>
                         <button
                           type="button"
+                          className={timeRange === 'all' ? 'active' : ''}
                           onClick={() => setTimeRange('all')}
-                          style={{
-                            padding: '6px 12px',
-                            borderRadius: '8px',
-                            border: '1px solid #4a2e63',
-                            background: timeRange === 'all' ? '#ff8ec7' : 'transparent',
-                            color: timeRange === 'all' ? '#fff' : '#c9b3d9',
-                            cursor: 'pointer',
-                          }}
                         >
                           Всё время
                         </button>
                       </div>
                     </div>
                     {filteredChartData.length === 0 ? (
-                      <div style={{ textAlign: 'center', padding: '40px', color: '#c9b3d9' }}>
-                        За выбранный период операций нет.
-                      </div>
+                      <div className="budget-chart-empty">За выбранный период операций нет.</div>
                     ) : (
                       <div style={{ width: '100%', height: 350 }}>
                         <ResponsiveContainer>
@@ -672,60 +526,34 @@ export default function Home() {
                               </linearGradient>
                             </defs>
                             <CartesianGrid strokeDasharray="3 3" stroke="#362148" />
-                            <XAxis
-                              dataKey="date"
-                              stroke="#c9b3d9"
-                              fontSize={12}
-                              tickFormatter={(val) => val.slice(5)}
-                            />
-                            <YAxis
-                              stroke="#c9b3d9"
-                              fontSize={12}
-                              tickFormatter={(val) => new Intl.NumberFormat('ru-RU').format(val)}
-                            />
+                            <XAxis dataKey="date" stroke="#c9b3d9" fontSize={12} tickFormatter={(val) => val.slice(5)} />
+                            <YAxis stroke="#c9b3d9" fontSize={12} tickFormatter={(val) => new Intl.NumberFormat('ru-RU').format(val)} />
                             <Tooltip content={<CustomTooltip />} />
-                            <Area
-                              type="linear"
-                              dataKey="balance"
-                              stroke="#ff8ec7"
-                              fillOpacity={1}
-                              fill="url(#colorBalance)"
-                            />
+                            <Area type="linear" dataKey="balance" stroke="#ff8ec7" fillOpacity={1} fill="url(#colorBalance)" />
                           </AreaChart>
                         </ResponsiveContainer>
                       </div>
                     )}
                   </div>
 
-                  {/* ТАБЛИЦА ОПЕРАЦИЙ */}
-                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '20px', borderRadius: '16px', border: '1px solid #4a2e63' }}>
-                    <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px', color: '#fbeaff' }}>
-                      Последние операции
-                    </h3>
-                    <table className="ops-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
+                  <div className="budget-history">
+                    <h3>Последние операции</h3>
+                    <table className="history-table">
                       <thead>
-                        <tr style={{ borderBottom: '1px solid #4a2e63', color: '#c9b3d9', textAlign: 'left' }}>
-                          <th style={{ padding: '10px' }}>Дата</th>
-                          <th style={{ padding: '10px' }}>Категория</th>
-                          <th style={{ padding: '10px' }}>Описание</th>
-                          <th style={{ padding: '10px', textAlign: 'right' }}>Сумма</th>
+                        <tr>
+                          <th>Дата</th>
+                          <th>Категория</th>
+                          <th>Описание</th>
+                          <th style={{ textAlign: 'right' }}>Сумма</th>
                         </tr>
                       </thead>
                       <tbody>
                         {operations.slice(0, 10).map((op, i) => (
-                          <tr key={`${op.date}-${op.category}-${i}`} style={{ borderBottom: '1px solid #362148', color: '#fbeaff' }}>
-                            <td data-label="Дата" style={{ padding: '10px', color: '#c9b3d9' }}>{op.date}</td>
-                            <td data-label="Категория" style={{ padding: '10px', fontWeight: 'bold' }}>{op.category}</td>
-                            <td data-label="Описание" style={{ padding: '10px', color: '#c9b3d9' }}>{op.description}</td>
-                            <td
-                              data-label="Сумма"
-                              style={{
-                                padding: '10px',
-                                textAlign: 'right',
-                                fontWeight: 'bold',
-                                color: op.type === 'income' ? '#7be0a0' : '#ff8e8e',
-                              }}
-                            >
+                          <tr key={`${op.date}-${op.category}-${i}`}>
+                            <td className="h-date">{op.date}</td>
+                            <td className="h-cat" data-desc={op.description || ''}>{op.category}</td>
+                            <td className="h-desc">{op.description}</td>
+                            <td className={`h-amount ${op.type}`}>
                               {op.type === 'income' ? '+' : '−'} {formatMoney(op.amount)}
                             </td>
                           </tr>
@@ -733,18 +561,21 @@ export default function Home() {
                       </tbody>
                     </table>
                     {operations.length > 10 && (
-                      <div style={{ fontSize: '13px', color: '#c9b3d9', marginTop: '12px', textAlign: 'center' }}>
+                      <div className="budget-more">
                         Показаны последние 10 из {operations.length} операций.
                       </div>
                     )}
                   </div>
-                </div>
+
+                  <div className="budget-note">
+                    <strong>Прозрачность:</strong> данные берутся из открытого файла <code>/budget.txt</code> и обновляются вручную.
+                  </div>
+                </>
               )}
             </div>
           </div>
         </section>
 
-        {/* СПОНСОР */}
         <section id="sponsor" aria-labelledby="sponsor-title">
           <div className="container">
             <div className="sponsor-block reveal">
@@ -770,7 +601,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* FAQ */}
         <section id="faq" aria-labelledby="faq-title">
           <div className="container">
             <h2 id="faq-title" className="section-title reveal">Частые вопросы</h2>
@@ -789,7 +619,7 @@ export default function Home() {
                     aria-expanded={activeFaq === index}
                     onClick={() => setActiveFaq(activeFaq === index ? null : index)}
                   >
-                    {item.q} <span className="toggle">{activeFaq === index ? '−' : '+'}</span>
+                    {item.q} <span className="toggle">+</span>
                   </button>
                   <div className="faq-a" role="region"><div>{item.a}</div></div>
                 </div>
@@ -816,7 +646,6 @@ export default function Home() {
         </div>
       </footer>
 
-      {/* МОДАЛКА */}
       {isModalOpen && (
         <div className="modal-overlay show" onClick={() => setIsModalOpen(false)}>
           <div
@@ -827,34 +656,16 @@ export default function Home() {
             aria-modal="true"
             aria-labelledby="support-modal-title"
           >
-            <button
-              type="button"
-              className="modal-close"
-              onClick={() => setIsModalOpen(false)}
-              aria-label="Закрыть"
-            >
-              ×
-            </button>
+            <button type="button" className="modal-close" onClick={() => setIsModalOpen(false)} aria-label="Закрыть">×</button>
             <h3 id="support-modal-title">Поддержать сервер</h3>
-            <p className="modal-sub">
-              Выбери количество недель. Роль и SP начислим автоматически после оплаты.
-            </p>
-            <div className="weeks-presets" style={{ display: 'flex', gap: '8px', marginBottom: '12px', flexWrap: 'wrap' }}>
+            <p className="modal-sub">Выбери количество недель. Роль и SP начислим автоматически после оплаты.</p>
+            <div className="weeks-presets">
               {[1, 4, 12, 26].map((w) => (
                 <button
                   key={w}
                   type="button"
+                  className={weeks === w ? 'active' : ''}
                   onClick={() => setWeeks(w)}
-                  style={{
-                    flex: '1 1 auto',
-                    padding: '8px 12px',
-                    borderRadius: '8px',
-                    border: '1px solid #4a2e63',
-                    background: weeks === w ? '#ff8ec7' : 'transparent',
-                    color: weeks === w ? '#fff' : '#c9b3d9',
-                    cursor: 'pointer',
-                    fontSize: '13px',
-                  }}
                 >
                   {w} {pluralizeWeeks(w)}
                 </button>
@@ -876,7 +687,6 @@ export default function Home() {
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-primary"
-              style={{ width: '100%', justifyContent: 'center', textDecoration: 'none', boxSizing: 'border-box' }}
             >
               Оплата скоро — написать в Telegram
             </a>
