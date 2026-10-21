@@ -1,18 +1,25 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 export default function SuccessPage() {
-  const [mounted, setMounted] = useState(false);
-
   useEffect(() => {
-    setMounted(true);
+    window.scrollTo(0, 0);
   }, []);
 
   return (
     <main style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
-      <div className={`sponsor-block reveal ${mounted ? 'visible' : ''}`} style={{ maxWidth: '600px', width: '100%', textAlign: 'center' }}>
+      {/* Убрали любые opacity и анимации появления. Блок всегда виден. */}
+      <div 
+        className="sponsor-block" 
+        style={{ 
+          maxWidth: '600px', 
+          width: '100%', 
+          textAlign: 'center',
+          boxShadow: '0 20px 40px rgba(0,0,0,0.4)'
+        }}
+      >
         
         <div style={{ fontSize: '64px', marginBottom: '16px', lineHeight: 1 }}>💖</div>
         
