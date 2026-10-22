@@ -69,16 +69,15 @@ const ServerStatus = () => {
   };
 
   const getPingColor = (ping: number) => {
-    if (ping < 80) return '#7be0a0'; // Зеленый (отлично)
-    if (ping < 150) return '#f1c40f'; // Желтый (нормально)
-    return '#ff8e8e'; // Красный (плохо)
+    if (ping < 80) return '#7be0a0';
+    if (ping < 150) return '#f1c40f';
+    return '#ff8e8e';
   };
 
   return (
     <div style={{ marginTop: '24px' }}>
       {loading && <div style={{ color: '#c9b3d9', textAlign: 'center', marginBottom: '16px' }}>Проверка серверов…</div>}
       
-      {/* Сетка карточек */}
       <div style={{ 
         display: 'grid', 
         gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', 
@@ -97,7 +96,6 @@ const ServerStatus = () => {
               position: 'relative'
             }}
           >
-            {/* Заголовок карточки */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -114,7 +112,6 @@ const ServerStatus = () => {
               </div>
             </div>
 
-            {/* IP-адрес */}
             <div 
               onClick={() => copyToClipboard(srv.host)}
               style={{ 
@@ -138,7 +135,6 @@ const ServerStatus = () => {
               </span>
             </div>
 
-            {/* Нижняя часть: Пинг и Игроки */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 'auto' }}>
               {srv.online ? (
                 <div style={{ 
@@ -421,8 +417,6 @@ export default function Home() {
 
   return (
     <>
-      <a className="skip-link" href="#main">К содержанию</a>
-
       <nav aria-label="Основная навигация">
         <div className="container nav-inner">
           <div className="logo">Girls Civilization</div>
@@ -512,7 +506,8 @@ export default function Home() {
           <div className="container">
             <h2 id="servers-title" className="section-title reveal">Наши серверы</h2>
             <p className="section-sub reveal">
-              Выбери любой IP. Если один не работает — попробуй другой. Пинг зависит от твоего местоположения.
+              Это <strong>один и тот же наш уютный мир</strong>, просто с разными «входными дверями» (фильтрами защиты). 
+              Выбери тот, где у тебя лучше всего работает пинг — зайти можно через любой!
             </p>
             <ServerStatus />
           </div>
