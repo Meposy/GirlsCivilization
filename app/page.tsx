@@ -26,11 +26,24 @@ const ServerStatus = () => {
       const results = await Promise.all(
         SERVERS.map(async (server) => {
           try {
+            // 1. Получаем статус (онлайн/офлайн)
             const res = await fetch(`https://api.mcsrvstat.us/3/${server.host}`);
             const data = await res.json();
-            return { ...server, ...data };
+
+            // 2. Замеряем пинг (время ответа до домена)
+            const start = performance.now();
+            try {
+              // Отправляем запрос на корень домена (без порта), чтобы замерить время
+              await fetch(`https://${server.host}`, { mode: 'no-cors', cache: 'no-store' });
+            } catch (e) {
+              // Если запрос не прошел (или CORS), всё равно считаем время
+            }
+            const end = performance.now();
+            const ping = Math.round(end - start);
+
+            return { ...server, ...data, ping };
           } catch (err) {
-            return { ...server, online: false };
+            return { ...server, online: false, ping: 0 };
           }
         })
       );
@@ -67,12 +80,24 @@ const ServerStatus = () => {
               {srv.host}
             </div>
           </div>
-          <div style={{ textAlign: 'right' }}>
-            <div style={{ color: srv.online ? '#7be0a0' : '#ff8e8e', fontWeight: 'bold' }}>
-              {srv.online ? 'Онлайн' : 'Офлайн'}
-            </div>
-            <div style={{ fontSize: '12px', color: '#c9b3d9' }}>
-              {srv.players ? `${srv.players.online} / ${srv.players.max}` : '0 / 100'}
+          
+          <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+            {/* ПИНГ */}
+            {srv.online && srv.ping > 0 && (
+              <div style={{ textAlign: 'center', background: 'rgba(255, 142, 199, 0.1)', padding: '6px 12px', borderRadius: '8px', border: '1px solid #ff8ec7' }}>
+                <div style={{ fontSize: '11px', color: '#c9b3d9' }}>Пинг</div>
+                <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#ff8ec7' }}>{srv.ping} мс</div>
+              </div>
+            )}
+            
+            {/* СТАТУС И ИГРОКИ */}
+            <div style={{ textAlign: 'right', minWidth: '80px' }}>
+              <div style={{ color: srv.online ? '#7be0a0' : '#ff8e8e', fontWeight: 'bold' }}>
+                {srv.online ? 'Онлайн' : 'Офлайн'}
+              </div>
+              <div style={{ fontSize: '12px', color: '#c9b3d9' }}>
+                {srv.players ? `${srv.players.online} / ${srv.players.max}` : '0 / 100'}
+              </div>
             </div>
           </div>
         </div>
