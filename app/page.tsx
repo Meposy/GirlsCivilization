@@ -419,7 +419,6 @@ export default function Home() {
     <>
       <nav aria-label="Основная навигация">
         <div className="container nav-inner">
-          {/* Убрали эмодзи */}
           <div className="logo">Girls Civilization</div>
           
           <div className="nav-links">
@@ -472,11 +471,16 @@ export default function Home() {
       <main id="main">
         <header className="hero">
           <div className="container">
-            <div className="hero-badge">Только для девушек</div>
-            <div className="online-badge" data-state="online">
-              <span className="dot"></span>
-              <span>Сервер работает 24/7</span>
+            
+            {/* Вот тут мы обернули плашки в контейнер, чтобы они не слипались */}
+            <div className="hero-badges">
+              <div className="hero-badge">Только для девушек</div>
+              <div className="online-badge" data-state="online">
+                <span className="dot"></span>
+                <span>Сервер работает 24/7</span>
+              </div>
             </div>
+
             <h1>Уютный Minecraft<br />только для нас</h1>
             <p className="subtitle">
               Girls Civilization — сообщество девушек, где можно строить, дружить и отдыхать. Косметика, NPC-жительницы, аукцион, приваты, гильдии. Без pay-to-win.
@@ -805,7 +809,6 @@ export default function Home() {
       <footer>
         <div className="container">
           <div className="footer-inner">
-            {/* Убрали эмодзи и здесь */}
             <div className="logo">Girls Civilization</div>
             <div className="footer-links">
               <a href="https://t.me/girlsciv" target="_blank" rel="noopener noreferrer">Telegram-канал</a>
