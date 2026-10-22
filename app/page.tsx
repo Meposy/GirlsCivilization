@@ -11,16 +11,17 @@ type Operation = {
   description: string;
 };
 
-// --- НОВЫЙ БЛОК: Статус серверов ---
+// --- БЛОК СЕРВЕРОВ ---
 const SERVERS = [
-  { name: 'NeoProtect (Франция)', host: 'np.girlsciv.ru', ip: '82.22.5.17', tag: 'Рекомендуемый' },
-  { name: 'InfinityFilter (Польша)', host: 'if.girlsciv.ru', ip: '163.5.149.61', tag: 'Запасной' },
-  { name: 'TCPShield (Канада)', host: 'ca.girlsciv.ru', ip: '50.114.4.86', tag: 'Резерв' },
+  { name: 'Франция', host: 'np.girlsciv.ru', tag: 'Рекомендуемый' },
+  { name: 'Польша', host: 'if.girlsciv.ru', tag: 'Запасной' },
+  { name: 'Канада', host: 'ca.girlsciv.ru', tag: 'Резерв' },
 ];
 
 const ServerStatus = () => {
   const [statuses, setStatuses] = useState<any[]>(SERVERS);
   const [loading, setLoading] = useState(true);
+  const [copiedHost, setCopiedHost] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchStatus = async () => {
@@ -28,26 +29,26 @@ const ServerStatus = () => {
         const results = await Promise.all(
           SERVERS.map(async (server) => {
             try {
-              // Запрос к MinecraftPinger API с обязательным User-Agent
               const res = await fetch(`https://www.minecraftpinger.com/api/v1/${server.host}`, {
                 headers: { 'User-Agent': 'GirlsCiv/1.0' }
               });
               const data = await res.json();
 
-              // Если сервер онлайн, берем данные оттуда
               if (data.message === 'ok' && data.server) {
                 return {
                   ...server,
                   online: true,
-                  players: data.server.players || { online: 0, max: 100 },
+                  players: { 
+                    online: data.server.players?.online || 0, 
+                    max: 20 // Жестко ставим 20 из-за лимитов бесплатных прокси
+                  }, 
                   ping: data.server.ping || 0,
-                  motd: data.server.motd,
                 };
               } else {
-                return { ...server, online: false, ping: 0 };
+                return { ...server, online: false, ping: 0, players: { online: 0, max: 20 } };
               }
             } catch (err) {
-              return { ...server, online: false, ping: 0 };
+              return { ...server, online: false, ping: 0, players: { online: 0, max: 20 } };
             }
           })
         );
@@ -60,6 +61,18 @@ const ServerStatus = () => {
     };
     fetchStatus();
   }, []);
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedHost(text);
+    setTimeout(() => setCopiedHost(null), 2000);
+  };
+
+  const getPingColor = (ping: number) => {
+    if (ping < 80) return '#7be0a0'; // Зеленый (отлично)
+    if (ping < 150) return '#f1c40f'; // Желтый (нормально)
+    return '#ff8e8e'; // Красный (плохо)
+  };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '20px' }}>
@@ -87,17 +100,42 @@ const ServerStatus = () => {
                 </span>
               )}
             </div>
-            <div style={{ fontSize: '13px', color: '#c9b3d9', marginTop: '4px' }}>
+            
+            {/* Кликабельный IP */}
+            <div 
+              onClick={() => copyToClipboard(srv.host)}
+              style={{ 
+                fontSize: '13px', 
+                color: copiedHost === srv.host ? '#7be0a0' : '#c9b3d9', 
+                marginTop: '4px', 
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
+              title="Нажми, чтобы скопировать IP"
+            >
               {srv.host}
+              <span style={{ fontSize: '10px', opacity: 0.6 }}>
+                {copiedHost === srv.host ? '✓ скопировано' : '📋'}
+              </span>
             </div>
           </div>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-            {/* ПИНГ (из API, реальный) */}
+            {/* ПИНГ с цветовой индикацией */}
             {srv.online && srv.ping > 0 && (
-              <div style={{ textAlign: 'center', background: 'rgba(255, 142, 199, 0.1)', padding: '6px 12px', borderRadius: '8px', border: '1px solid #ff8ec7' }}>
+              <div style={{ 
+                textAlign: 'center', 
+                background: 'rgba(255, 255, 255, 0.05)', 
+                padding: '6px 12px', 
+                borderRadius: '8px', 
+                border: `1px solid ${getPingColor(srv.ping)}` 
+              }}>
                 <div style={{ fontSize: '11px', color: '#c9b3d9' }}>Пинг</div>
-                <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#ff8ec7' }}>{srv.ping} мс</div>
+                <div style={{ fontSize: '18px', fontWeight: 'bold', color: getPingColor(srv.ping) }}>
+                  {srv.ping} мс
+                </div>
               </div>
             )}
             
@@ -106,7 +144,7 @@ const ServerStatus = () => {
                 {srv.online ? 'Онлайн' : 'Офлайн'}
               </div>
               <div style={{ fontSize: '12px', color: '#c9b3d9' }}>
-                {srv.players ? `${srv.players.online} / ${srv.players.max}` : '0 / 100'}
+                {srv.players ? `${srv.players.online} / ${srv.players.max}` : '0 / 20'}
               </div>
             </div>
           </div>
@@ -115,7 +153,7 @@ const ServerStatus = () => {
     </div>
   );
 };
-// --- КОНЕЦ НОВОГО БЛОКА ---
+// --- КОНЕЦ БЛОКА СЕРВЕРОВ ---
 
 const pluralizeWeeks = (n: number) => {
   const mod10 = n % 10;
@@ -200,7 +238,7 @@ export default function Home() {
 
   const PRICE_PER_WEEK = 99;
   const SP_PER_WEEK = 50;
-  const IP = 'np.girlsciv.ru'; // <-- ОБНОВЛЕНО НА САМЫЙ БЫСТРЫЙ IP
+  const IP = 'np.girlsciv.ru'; // <-- САМЫЙ БЫСТРЫЙ IP
   const screenshots = [
     '/screen1.png',
     '/screen2.png',
@@ -453,7 +491,7 @@ export default function Home() {
           </div>
         </header>
 
-        {/* --- НОВАЯ СЕКЦИЯ СЕРВЕРОВ --- */}
+        {/* --- СЕКЦИЯ СЕРВЕРОВ --- */}
         <section id="servers" aria-labelledby="servers-title">
           <div className="container">
             <h2 id="servers-title" className="section-title reveal">Наши серверы</h2>
