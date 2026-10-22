@@ -19,41 +19,46 @@ const SERVERS = [
 ];
 
 const ServerStatus = () => {
-  const [statuses, setStatuses] = useState<any[]>([]);
+  const [statuses, setStatuses] = useState<any[]>(SERVERS); // Изначально показываем список
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchStatus = async () => {
-      const results = await Promise.all(
-        SERVERS.map(async (server) => {
-          try {
-            // 1. Получаем статус (онлайн/офлайн)
-            const res = await fetch(`https://api.mcsrvstat.us/3/${server.host}`);
-            const data = await res.json();
-
-            // 2. Замеряем пинг (время ответа до домена)
-            const start = performance.now();
+      try {
+        const results = await Promise.all(
+          SERVERS.map(async (server) => {
             try {
-              // Отправляем запрос на корень домена (без порта), чтобы замерить время
-              await fetch(`https://${server.host}`, { mode: 'no-cors', cache: 'no-store' });
-            } catch (e) {
-              // Если запрос не прошел (или CORS), всё равно считаем время
-            }
-            const end = performance.now();
-            const ping = Math.round(end - start);
+              const res = await fetch(`https://api.mcsrvstat.us/3/${server.host}`);
+              const data = await res.json();
 
-            return { ...server, ...data, ping };
-          } catch (err) {
-            return { ...server, online: false, ping: 0 };
-          }
-        })
-      );
-      setStatuses(results);
+              // Замер пинга
+              const start = performance.now();
+              try {
+                await fetch(`https://${server.host}`, { mode: 'no-cors', cache: 'no-store' });
+              } catch (e) {}
+              const end = performance.now();
+              const ping = Math.round(end - start);
+
+              return { ...server, ...data, ping };
+            } catch (err) {
+              return { ...server, online: false, ping: 0 };
+            }
+          })
+        );
+        setStatuses(results);
+      } catch (err) {
+        console.error('Ошибка загрузки статусов:', err);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchStatus();
   }, []);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '20px' }}>
+      {loading && <div style={{ color: '#c9b3d9', textAlign: 'center' }}>Проверка серверов…</div>}
+      
       {statuses.map((srv) => (
         <div
           key={srv.host}
@@ -82,7 +87,6 @@ const ServerStatus = () => {
           </div>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-            {/* ПИНГ */}
             {srv.online && srv.ping > 0 && (
               <div style={{ textAlign: 'center', background: 'rgba(255, 142, 199, 0.1)', padding: '6px 12px', borderRadius: '8px', border: '1px solid #ff8ec7' }}>
                 <div style={{ fontSize: '11px', color: '#c9b3d9' }}>Пинг</div>
@@ -90,13 +94,12 @@ const ServerStatus = () => {
               </div>
             )}
             
-            {/* СТАТУС И ИГРОКИ */}
             <div style={{ textAlign: 'right', minWidth: '80px' }}>
-              <div style={{ color: srv.online ? '#7be0a0' : '#ff8e8e', fontWeight: 'bold' }}>
-                {srv.online ? 'Онлайн' : 'Офлайн'}
+              <div style={{ color: srv.online ? '#7be0a0' : (srv.online === false ? '#ff8e8e' : '#c9b3d9'), fontWeight: 'bold' }}>
+                {srv.online === true ? 'Онлайн' : (srv.online === false ? 'Офлайн' : 'Проверка...')}
               </div>
               <div style={{ fontSize: '12px', color: '#c9b3d9' }}>
-                {srv.players ? `${srv.players.online} / ${srv.players.max}` : '0 / 100'}
+                {srv.players ? `${srv.players.online} / ${srv.players.max}` : ''}
               </div>
             </div>
           </div>
