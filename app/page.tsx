@@ -13,9 +13,9 @@ type Operation = {
 
 // --- НОВЫЙ БЛОК: Статус серверов ---
 const SERVERS = [
-  { name: 'NeoProtect (Франция)', host: 'np.girlsciv.ru', ip: '82.22.5.17', tag: 'Рекомендуемый', fallbackPing: 80 },
-  { name: 'InfinityFilter (Польша)', host: 'if.girlsciv.ru', ip: '163.5.149.61', tag: 'Запасной', fallbackPing: 97 },
-  { name: 'TCPShield (Канада)', host: 'ca.girlsciv.ru', ip: '50.114.4.86', tag: 'Резерв', fallbackPing: 183 },
+  { name: 'NeoProtect (Франция)', host: 'np.girlsciv.ru', ip: '82.22.5.17', tag: 'Рекомендуемый' },
+  { name: 'InfinityFilter (Польша)', host: 'if.girlsciv.ru', ip: '163.5.149.61', tag: 'Запасной' },
+  { name: 'TCPShield (Канада)', host: 'ca.girlsciv.ru', ip: '50.114.4.86', tag: 'Резерв' },
 ];
 
 const ServerStatus = () => {
@@ -27,46 +27,21 @@ const ServerStatus = () => {
       try {
         const results = await Promise.all(
           SERVERS.map(async (server) => {
-            let online = false;
-            let players = { online: 0, max: 100 };
-            let ping = (server as any).fallbackPing || 0;
-
-            // 1. Ручной замер пинга (всегда работает)
-            const start = performance.now();
             try {
-              await fetch(`https://${server.host}`, { mode: 'no-cors', cache: 'no-store' });
-            } catch (e) {}
-            const end = performance.now();
-            const measuredPing = Math.round(end - start);
+              // Запрос к MCPing API
+              const res = await fetch(`https://rgghgh.com/minecraft/mcp/api/${server.host}`);
+              const data = await res.json();
 
-            // Если пинг адекватный (меньше 1000 мс), используем его
-            if (measuredPing < 1000) {
-              ping = measuredPing;
+              return {
+                ...server,
+                online: data.status === 'online',
+                players: data.players || { online: 0, max: 100 },
+                ping: data.latency ? Math.round(data.latency) : 0,
+                motd: data.motd,
+              };
+            } catch (err) {
+              return { ...server, online: false, ping: 0 };
             }
-
-            // 2. Получаем статус (онлайн/офлайн) и игроков
-            try {
-              const res = await fetch(`https://api.mcstatus.io/v2/status/java/${server.host}`);
-              if (res.ok) {
-                const data = await res.json();
-                online = data.online;
-                if (data.players) players = data.players;
-              }
-            } catch (e) {
-              // Если API не ответил, пробуем mcsrvstat.us
-              try {
-                const res = await fetch(`https://api.mcsrvstat.us/3/${server.host}`);
-                if (res.ok) {
-                  const data = await res.json();
-                  online = data.online;
-                  if (data.players) players = data.players;
-                }
-              } catch (e2) {
-                console.error('Ошибка API:', e2);
-              }
-            }
-
-            return { ...server, online, players, ping };
           })
         );
         setStatuses(results);
@@ -111,8 +86,8 @@ const ServerStatus = () => {
           </div>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-            {/* ПИНГ (показываем всегда) */}
-            {srv.ping > 0 && (
+            {/* ПИНГ */}
+            {srv.online && srv.ping > 0 && (
               <div style={{ textAlign: 'center', background: 'rgba(255, 142, 199, 0.1)', padding: '6px 12px', borderRadius: '8px', border: '1px solid #ff8ec7' }}>
                 <div style={{ fontSize: '11px', color: '#c9b3d9' }}>Пинг</div>
                 <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#ff8ec7' }}>{srv.ping} мс</div>
@@ -120,11 +95,11 @@ const ServerStatus = () => {
             )}
             
             <div style={{ textAlign: 'right', minWidth: '80px' }}>
-              <div style={{ color: srv.online ? '#7be0a0' : (srv.online === false ? '#ff8e8e' : '#c9b3d9'), fontWeight: 'bold' }}>
-                {srv.online === true ? 'Онлайн' : (srv.online === false ? 'Офлайн' : 'Проверка...')}
+              <div style={{ color: srv.online ? '#7be0a0' : '#ff8e8e', fontWeight: 'bold' }}>
+                {srv.online ? 'Онлайн' : 'Офлайн'}
               </div>
               <div style={{ fontSize: '12px', color: '#c9b3d9' }}>
-                {srv.players ? `${srv.players.online} / ${srv.players.max}` : ''}
+                {srv.players ? `${srv.players.online} / ${srv.players.max}` : '0 / 100'}
               </div>
             </div>
           </div>
