@@ -11,6 +11,77 @@ type Operation = {
   description: string;
 };
 
+// --- НОВЫЙ БЛОК: Статус серверов ---
+const SERVERS = [
+  { name: 'NeoProtect (Франция)', host: 'np.girlsciv.ru', ip: '82.22.5.17', tag: 'Рекомендуемый' },
+  { name: 'InfinityFilter (Польша)', host: 'if.girlsciv.ru', ip: '163.5.149.61', tag: 'Запасной' },
+  { name: 'TCPShield (Канада)', host: 'ca.girlsciv.ru', ip: '50.114.4.86', tag: 'Резерв' },
+];
+
+const ServerStatus = () => {
+  const [statuses, setStatuses] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchStatus = async () => {
+      const results = await Promise.all(
+        SERVERS.map(async (server) => {
+          try {
+            const res = await fetch(`https://api.mcsrvstat.us/3/${server.host}`);
+            const data = await res.json();
+            return { ...server, ...data };
+          } catch (err) {
+            return { ...server, online: false };
+          }
+        })
+      );
+      setStatuses(results);
+    };
+    fetchStatus();
+  }, []);
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '20px' }}>
+      {statuses.map((srv) => (
+        <div
+          key={srv.host}
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: '16px 20px',
+            background: 'rgba(43, 26, 61, 0.6)',
+            border: '1px solid #4a2e63',
+            borderRadius: '12px',
+          }}
+        >
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <strong style={{ fontSize: '16px' }}>{srv.name}</strong>
+              {srv.tag && (
+                <span style={{ fontSize: '10px', background: '#ff8ec7', color: '#1a1a2e', padding: '2px 8px', borderRadius: '10px', fontWeight: 'bold' }}>
+                  {srv.tag}
+                </span>
+              )}
+            </div>
+            <div style={{ fontSize: '13px', color: '#c9b3d9', marginTop: '4px' }}>
+              {srv.host}
+            </div>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ color: srv.online ? '#7be0a0' : '#ff8e8e', fontWeight: 'bold' }}>
+              {srv.online ? 'Онлайн' : 'Офлайн'}
+            </div>
+            <div style={{ fontSize: '12px', color: '#c9b3d9' }}>
+              {srv.players ? `${srv.players.online} / ${srv.players.max}` : '0 / 100'}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+// --- КОНЕЦ НОВОГО БЛОКА ---
+
 const pluralizeWeeks = (n: number) => {
   const mod10 = n % 10;
   const mod100 = n % 100;
@@ -94,7 +165,7 @@ export default function Home() {
 
   const PRICE_PER_WEEK = 99;
   const SP_PER_WEEK = 50;
-  const IP = 'mc.girlsciv.run.place';
+  const IP = 'np.girlsciv.ru'; // <-- ОБНОВЛЕНО НА САМЫЙ БЫСТРЫЙ IP
   const screenshots = [
     '/screen1.png',
     '/screen2.png',
@@ -268,6 +339,7 @@ export default function Home() {
           <div className="logo">Girls Civilization</div>
           <div className="nav-links">
             <a href="#about">О сервере</a>
+            <a href="#servers">Серверы</a>
             <a href="#shots">Скриншоты</a>
             <a href="#start">Как начать</a>
             <a href="#rules">Правила</a>
@@ -293,6 +365,7 @@ export default function Home() {
         <div className="container">
           <div id="mobile-menu" className={`mobile-menu ${isMobileMenuOpen ? 'open' : ''}`}>
             <a href="#about" onClick={() => setIsMobileMenuOpen(false)}>О сервере</a>
+            <a href="#servers" onClick={() => setIsMobileMenuOpen(false)}>Серверы</a>
             <a href="#shots" onClick={() => setIsMobileMenuOpen(false)}>Скриншоты</a>
             <a href="#start" onClick={() => setIsMobileMenuOpen(false)}>Как начать</a>
             <a href="#rules" onClick={() => setIsMobileMenuOpen(false)}>Правила</a>
@@ -344,6 +417,18 @@ export default function Home() {
             </div>
           </div>
         </header>
+
+        {/* --- НОВАЯ СЕКЦИЯ СЕРВЕРОВ --- */}
+        <section id="servers" aria-labelledby="servers-title">
+          <div className="container">
+            <h2 id="servers-title" className="section-title reveal">Наши серверы</h2>
+            <p className="section-sub reveal">
+              Выбери любой IP. Если один не работает — попробуй другой. Пинг зависит от твоего местоположения.
+            </p>
+            <ServerStatus />
+          </div>
+        </section>
+        {/* --- КОНЕЦ СЕКЦИИ СЕРВЕРОВ --- */}
 
         <section id="shots" className="shots" aria-labelledby="shots-title">
           <div className="container">
