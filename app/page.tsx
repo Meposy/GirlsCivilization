@@ -27,20 +27,36 @@ const ServerStatus = () => {
       try {
         const results = await Promise.all(
           SERVERS.map(async (server) => {
-            try {
-              // Запрашиваем статус и пинг через mcstatus.io
-              const res = await fetch(`https://api.mcstatus.io/v2/status/java/${server.host}`);
-              const data = await res.json();
+            let online = false;
+            let players = { online: 0, max: 100 };
+            let ping = (server as any).fallbackPing || 0;
 
-              return {
-                ...server,
-                online: data.online,
-                players: data.players,
-                ping: data.ping ? Math.round(data.ping) : 0,
-              };
-            } catch (err) {
-              return { ...server, online: false, ping: 0 };
+            // 1. Пробуем mcstatus.io (быстрый и точный)
+            try {
+              const res = await fetch(`https://api.mcstatus.io/v2/status/java/${server.host}`);
+              if (res.ok) {
+                const data = await res.json();
+                if (data.online) {
+                  online = true;
+                  players = data.players || players;
+                  ping = data.ping ? Math.round(data.ping) : ping;
+                }
+              }
+            } catch (e) {
+              // 2. Если не вышло — пробуем mcsrvstat.us
+              try {
+                const res = await fetch(`https://api.mcsrvstat.us/3/${server.host}`);
+                if (res.ok) {
+                  const data = await res.json();
+                  online = data.online;
+                  if (data.players) players = data.players;
+                }
+              } catch (e2) {
+                console.error('Ошибка обоих API:', e2);
+              }
             }
+
+            return { ...server, online, players, ping };
           })
         );
         setStatuses(results);
