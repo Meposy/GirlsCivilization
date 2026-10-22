@@ -28,17 +28,24 @@ const ServerStatus = () => {
         const results = await Promise.all(
           SERVERS.map(async (server) => {
             try {
-              // Запрос к MCPing API
-              const res = await fetch(`https://rgghgh.com/minecraft/mcp/api/${server.host}`);
+              // Запрос к MinecraftPinger API с обязательным User-Agent
+              const res = await fetch(`https://www.minecraftpinger.com/api/v1/${server.host}`, {
+                headers: { 'User-Agent': 'GirlsCiv/1.0' }
+              });
               const data = await res.json();
 
-              return {
-                ...server,
-                online: data.status === 'online',
-                players: data.players || { online: 0, max: 100 },
-                ping: data.latency ? Math.round(data.latency) : 0,
-                motd: data.motd,
-              };
+              // Если сервер онлайн, берем данные оттуда
+              if (data.message === 'ok' && data.server) {
+                return {
+                  ...server,
+                  online: true,
+                  players: data.server.players || { online: 0, max: 100 },
+                  ping: data.server.ping || 0,
+                  motd: data.server.motd,
+                };
+              } else {
+                return { ...server, online: false, ping: 0 };
+              }
             } catch (err) {
               return { ...server, online: false, ping: 0 };
             }
@@ -86,7 +93,7 @@ const ServerStatus = () => {
           </div>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-            {/* ПИНГ */}
+            {/* ПИНГ (из API, реальный) */}
             {srv.online && srv.ping > 0 && (
               <div style={{ textAlign: 'center', background: 'rgba(255, 142, 199, 0.1)', padding: '6px 12px', borderRadius: '8px', border: '1px solid #ff8ec7' }}>
                 <div style={{ fontSize: '11px', color: '#c9b3d9' }}>Пинг</div>
