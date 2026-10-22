@@ -13,9 +13,9 @@ type Operation = {
 
 // --- НОВЫЙ БЛОК: Статус серверов ---
 const SERVERS = [
-  { name: 'NeoProtect (Франция)', host: 'np.girlsciv.ru', ip: '82.22.5.17', tag: 'Рекомендуемый' },
-  { name: 'InfinityFilter (Польша)', host: 'if.girlsciv.ru', ip: '163.5.149.61', tag: 'Запасной' },
-  { name: 'TCPShield (Канада)', host: 'ca.girlsciv.ru', ip: '50.114.4.86', tag: 'Резерв' },
+  { name: 'NeoProtect (Франция)', host: 'np.girlsciv.ru', ip: '82.22.5.17', tag: 'Рекомендуемый', fallbackPing: 80 },
+  { name: 'InfinityFilter (Польша)', host: 'if.girlsciv.ru', ip: '163.5.149.61', tag: 'Запасной', fallbackPing: 97 },
+  { name: 'TCPShield (Канада)', host: 'ca.girlsciv.ru', ip: '50.114.4.86', tag: 'Резерв', fallbackPing: 183 },
 ];
 
 const ServerStatus = () => {
