@@ -419,10 +419,9 @@ export default function Home() {
     <>
       <nav aria-label="Основная навигация">
         <div className="container nav-inner">
-          <div className="logo">
-            <span className="logo-mark" aria-hidden="true">🌸</span>
-            <span>Girls Civilization</span>
-          </div>
+          {/* Убрали эмодзи */}
+          <div className="logo">Girls Civilization</div>
+          
           <div className="nav-links">
             <a href="#about">О сервере</a>
             <a href="#servers">Серверы</a>
@@ -503,18 +502,16 @@ export default function Home() {
           </div>
         </header>
 
-        {/* --- СЕКЦИЯ СЕРВЕРОВ --- */}
         <section id="servers" aria-labelledby="servers-title">
           <div className="container">
             <h2 id="servers-title" className="section-title reveal">Наши серверы</h2>
             <p className="section-sub reveal">
-              Это <strong>один и тот же наш уютный мир</strong>, просто с разными «входными дверями» (фильтрами защиты).
+              Это <strong>один и тот же наш уютный мир</strong>, просто с разными «входными дверями» (фильтрами защиты). 
               Выбери тот, где у тебя лучше всего работает пинг — зайти можно через любой!
             </p>
             <ServerStatus />
           </div>
         </section>
-        {/* --- КОНЕЦ СЕКЦИИ СЕРВЕРОВ --- */}
 
         <section id="shots" className="shots" aria-labelledby="shots-title">
           <div className="container">
@@ -808,10 +805,8 @@ export default function Home() {
       <footer>
         <div className="container">
           <div className="footer-inner">
-            <div className="logo">
-              <span className="logo-mark" aria-hidden="true">🌸</span>
-              <span>Girls Civilization</span>
-            </div>
+            {/* Убрали эмодзи и здесь */}
+            <div className="logo">Girls Civilization</div>
             <div className="footer-links">
               <a href="https://t.me/girlsciv" target="_blank" rel="noopener noreferrer">Telegram-канал</a>
               <a href="mailto:themepyshow@gmail.com">Почта</a>
