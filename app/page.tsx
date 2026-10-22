@@ -13,9 +13,9 @@ type Operation = {
 
 // --- БЛОК СЕРВЕРОВ ---
 const SERVERS = [
-  { name: 'Франция', host: 'np.girlsciv.ru', tag: 'Рекомендуемый' },
-  { name: 'Польша', host: 'if.girlsciv.ru', tag: 'Запасной' },
-  { name: 'Канада', host: 'ca.girlsciv.ru', tag: 'Резерв' },
+  { name: 'Франция', host: 'np.girlsciv.ru', tag: 'Рекомендуемый', maxPlayers: 20 },
+  { name: 'Польша', host: 'if.girlsciv.ru', tag: 'Запасной', maxPlayers: 20 },
+  { name: 'Канада', host: 'ca.girlsciv.ru', tag: 'Резерв', maxPlayers: 100 },
 ];
 
 const ServerStatus = () => {
@@ -40,15 +40,15 @@ const ServerStatus = () => {
                   online: true,
                   players: { 
                     online: data.server.players?.online || 0, 
-                    max: 20 // Жестко ставим 20 из-за лимитов бесплатных прокси
+                    max: Math.min(data.server.players?.max || server.maxPlayers, server.maxPlayers)
                   }, 
                   ping: data.server.ping || 0,
                 };
               } else {
-                return { ...server, online: false, ping: 0, players: { online: 0, max: 20 } };
+                return { ...server, online: false, ping: 0, players: { online: 0, max: server.maxPlayers } };
               }
             } catch (err) {
-              return { ...server, online: false, ping: 0, players: { online: 0, max: 20 } };
+              return { ...server, online: false, ping: 0, players: { online: 0, max: server.maxPlayers } };
             }
           })
         );
@@ -75,81 +75,97 @@ const ServerStatus = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '20px' }}>
-      {loading && <div style={{ color: '#c9b3d9', textAlign: 'center' }}>Проверка серверов…</div>}
+    <div style={{ marginTop: '24px' }}>
+      {loading && <div style={{ color: '#c9b3d9', textAlign: 'center', marginBottom: '16px' }}>Проверка серверов…</div>}
       
-      {statuses.map((srv) => (
-        <div
-          key={srv.host}
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            padding: '16px 20px',
-            background: 'rgba(43, 26, 61, 0.6)',
-            border: '1px solid #4a2e63',
-            borderRadius: '12px',
-          }}
-        >
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <strong style={{ fontSize: '16px' }}>{srv.name}</strong>
-              {srv.tag && (
-                <span style={{ fontSize: '10px', background: '#ff8ec7', color: '#1a1a2e', padding: '2px 8px', borderRadius: '10px', fontWeight: 'bold' }}>
-                  {srv.tag}
-                </span>
-              )}
+      {/* Сетка карточек */}
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', 
+        gap: '16px' 
+      }}>
+        {statuses.map((srv) => (
+          <div
+            key={srv.host}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              padding: '20px',
+              background: 'rgba(43, 26, 61, 0.6)',
+              border: '1px solid #4a2e63',
+              borderRadius: '16px',
+              position: 'relative'
+            }}
+          >
+            {/* Заголовок карточки */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <strong style={{ fontSize: '18px', color: '#fbeaff' }}>{srv.name}</strong>
+                  {srv.tag && (
+                    <span style={{ fontSize: '10px', background: '#ff8ec7', color: '#1a1a2e', padding: '2px 8px', borderRadius: '10px', fontWeight: 'bold' }}>
+                      {srv.tag}
+                    </span>
+                  )}
+                </div>
+              </div>
+              <div style={{ color: srv.online ? '#7be0a0' : '#ff8e8e', fontWeight: 'bold', fontSize: '14px' }}>
+                {srv.online ? 'Онлайн' : 'Офлайн'}
+              </div>
             </div>
-            
-            {/* Кликабельный IP */}
+
+            {/* IP-адрес */}
             <div 
               onClick={() => copyToClipboard(srv.host)}
               style={{ 
-                fontSize: '13px', 
+                fontSize: '14px', 
                 color: copiedHost === srv.host ? '#7be0a0' : '#c9b3d9', 
-                marginTop: '4px', 
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '6px'
+                gap: '6px',
+                background: 'rgba(0,0,0,0.2)',
+                padding: '8px 12px',
+                borderRadius: '8px',
+                marginBottom: '16px',
+                transition: 'all 0.2s'
               }}
               title="Нажми, чтобы скопировать IP"
             >
               {srv.host}
-              <span style={{ fontSize: '10px', opacity: 0.6 }}>
-                {copiedHost === srv.host ? '✓ скопировано' : '📋'}
+              <span style={{ fontSize: '12px', marginLeft: 'auto', opacity: 0.8 }}>
+                {copiedHost === srv.host ? '✓' : '📋'}
               </span>
             </div>
-          </div>
-          
-          <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-            {/* ПИНГ с цветовой индикацией */}
-            {srv.online && srv.ping > 0 && (
-              <div style={{ 
-                textAlign: 'center', 
-                background: 'rgba(255, 255, 255, 0.05)', 
-                padding: '6px 12px', 
-                borderRadius: '8px', 
-                border: `1px solid ${getPingColor(srv.ping)}` 
-              }}>
-                <div style={{ fontSize: '11px', color: '#c9b3d9' }}>Пинг</div>
-                <div style={{ fontSize: '18px', fontWeight: 'bold', color: getPingColor(srv.ping) }}>
-                  {srv.ping} мс
+
+            {/* Нижняя часть: Пинг и Игроки */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 'auto' }}>
+              {srv.online ? (
+                <div style={{ 
+                  background: 'rgba(255, 255, 255, 0.05)', 
+                  padding: '6px 12px', 
+                  borderRadius: '8px', 
+                  border: `1px solid ${getPingColor(srv.ping)}` 
+                }}>
+                  <div style={{ fontSize: '10px', color: '#c9b3d9', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Пинг</div>
+                  <div style={{ fontSize: '20px', fontWeight: 'bold', color: getPingColor(srv.ping), lineHeight: '1' }}>
+                    {srv.ping} <span style={{ fontSize: '12px', fontWeight: 'normal' }}>мс</span>
+                  </div>
                 </div>
-              </div>
-            )}
-            
-            <div style={{ textAlign: 'right', minWidth: '80px' }}>
-              <div style={{ color: srv.online ? '#7be0a0' : '#ff8e8e', fontWeight: 'bold' }}>
-                {srv.online ? 'Онлайн' : 'Офлайн'}
-              </div>
-              <div style={{ fontSize: '12px', color: '#c9b3d9' }}>
-                {srv.players ? `${srv.players.online} / ${srv.players.max}` : '0 / 20'}
+              ) : (
+                <div style={{ fontSize: '12px', color: '#ff8e8e' }}>Сервер недоступен</div>
+              )}
+              
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontSize: '10px', color: '#c9b3d9', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Игроки</div>
+                <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#fbeaff' }}>
+                  {srv.players ? `${srv.players.online} / ${srv.players.max}` : '0 / 0'}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 };
@@ -238,7 +254,7 @@ export default function Home() {
 
   const PRICE_PER_WEEK = 99;
   const SP_PER_WEEK = 50;
-  const IP = 'np.girlsciv.ru'; // <-- САМЫЙ БЫСТРЫЙ IP
+  const IP = 'np.girlsciv.ru';
   const screenshots = [
     '/screen1.png',
     '/screen2.png',
