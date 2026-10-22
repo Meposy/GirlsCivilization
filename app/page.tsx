@@ -31,19 +31,29 @@ const ServerStatus = () => {
             let players = { online: 0, max: 100 };
             let ping = (server as any).fallbackPing || 0;
 
-            // 1. Пробуем mcstatus.io (быстрый и точный)
+            // 1. Ручной замер пинга (всегда работает)
+            const start = performance.now();
+            try {
+              await fetch(`https://${server.host}`, { mode: 'no-cors', cache: 'no-store' });
+            } catch (e) {}
+            const end = performance.now();
+            const measuredPing = Math.round(end - start);
+
+            // Если пинг адекватный (меньше 1000 мс), используем его
+            if (measuredPing < 1000) {
+              ping = measuredPing;
+            }
+
+            // 2. Получаем статус (онлайн/офлайн) и игроков
             try {
               const res = await fetch(`https://api.mcstatus.io/v2/status/java/${server.host}`);
               if (res.ok) {
                 const data = await res.json();
-                if (data.online) {
-                  online = true;
-                  players = data.players || players;
-                  ping = data.ping ? Math.round(data.ping) : ping;
-                }
+                online = data.online;
+                if (data.players) players = data.players;
               }
             } catch (e) {
-              // 2. Если не вышло — пробуем mcsrvstat.us
+              // Если API не ответил, пробуем mcsrvstat.us
               try {
                 const res = await fetch(`https://api.mcsrvstat.us/3/${server.host}`);
                 if (res.ok) {
@@ -52,7 +62,7 @@ const ServerStatus = () => {
                   if (data.players) players = data.players;
                 }
               } catch (e2) {
-                console.error('Ошибка обоих API:', e2);
+                console.error('Ошибка API:', e2);
               }
             }
 
@@ -101,7 +111,8 @@ const ServerStatus = () => {
           </div>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-            {srv.online && srv.ping > 0 && (
+            {/* ПИНГ (показываем всегда) */}
+            {srv.ping > 0 && (
               <div style={{ textAlign: 'center', background: 'rgba(255, 142, 199, 0.1)', padding: '6px 12px', borderRadius: '8px', border: '1px solid #ff8ec7' }}>
                 <div style={{ fontSize: '11px', color: '#c9b3d9' }}>Пинг</div>
                 <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#ff8ec7' }}>{srv.ping} мс</div>
