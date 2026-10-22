@@ -38,10 +38,10 @@ const ServerStatus = () => {
                 return {
                   ...server,
                   online: true,
-                  players: { 
-                    online: data.server.players?.online || 0, 
+                  players: {
+                    online: data.server.players?.online || 0,
                     max: Math.min(data.server.players?.max || server.maxPlayers, server.maxPlayers)
-                  }, 
+                  },
                   ping: data.server.ping || 0,
                 };
               } else {
@@ -77,11 +77,11 @@ const ServerStatus = () => {
   return (
     <div style={{ marginTop: '24px' }}>
       {loading && <div style={{ color: '#c9b3d9', textAlign: 'center', marginBottom: '16px' }}>Проверка серверов…</div>}
-      
-      <div style={{ 
-        display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', 
-        gap: '16px' 
+
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+        gap: '16px'
       }}>
         {statuses.map((srv) => (
           <div
@@ -112,11 +112,11 @@ const ServerStatus = () => {
               </div>
             </div>
 
-            <div 
+            <div
               onClick={() => copyToClipboard(srv.host)}
-              style={{ 
-                fontSize: '14px', 
-                color: copiedHost === srv.host ? '#7be0a0' : '#c9b3d9', 
+              style={{
+                fontSize: '14px',
+                color: copiedHost === srv.host ? '#7be0a0' : '#c9b3d9',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -137,11 +137,11 @@ const ServerStatus = () => {
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 'auto' }}>
               {srv.online ? (
-                <div style={{ 
-                  background: 'rgba(255, 255, 255, 0.05)', 
-                  padding: '6px 12px', 
-                  borderRadius: '8px', 
-                  border: `1px solid ${getPingColor(srv.ping)}` 
+                <div style={{
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  padding: '6px 12px',
+                  borderRadius: '8px',
+                  border: `1px solid ${getPingColor(srv.ping)}`
                 }}>
                   <div style={{ fontSize: '10px', color: '#c9b3d9', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Пинг</div>
                   <div style={{ fontSize: '20px', fontWeight: 'bold', color: getPingColor(srv.ping), lineHeight: '1' }}>
@@ -151,7 +151,7 @@ const ServerStatus = () => {
               ) : (
                 <div style={{ fontSize: '12px', color: '#ff8e8e' }}>Сервер недоступен</div>
               )}
-              
+
               <div style={{ textAlign: 'right' }}>
                 <div style={{ fontSize: '10px', color: '#c9b3d9', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Игроки</div>
                 <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#fbeaff' }}>
@@ -419,7 +419,10 @@ export default function Home() {
     <>
       <nav aria-label="Основная навигация">
         <div className="container nav-inner">
-          <div className="logo">Girls Civilization</div>
+          <div className="logo">
+            <span className="logo-mark" aria-hidden="true">🌸</span>
+            <span>Girls Civilization</span>
+          </div>
           <div className="nav-links">
             <a href="#about">О сервере</a>
             <a href="#servers">Серверы</a>
@@ -460,7 +463,6 @@ export default function Home() {
               type="button"
               className="nav-cta"
               onClick={() => { setIsModalOpen(true); setIsMobileMenuOpen(false); }}
-              style={{ marginTop: '8px' }}
             >
               <span>Поддержать</span>
             </button>
@@ -506,7 +508,7 @@ export default function Home() {
           <div className="container">
             <h2 id="servers-title" className="section-title reveal">Наши серверы</h2>
             <p className="section-sub reveal">
-              Это <strong>один и тот же наш уютный мир</strong>, просто с разными «входными дверями» (фильтрами защиты). 
+              Это <strong>один и тот же наш уютный мир</strong>, просто с разными «входными дверями» (фильтрами защиты).
               Выбери тот, где у тебя лучше всего работает пинг — зайти можно через любой!
             </p>
             <ServerStatus />
@@ -806,7 +808,10 @@ export default function Home() {
       <footer>
         <div className="container">
           <div className="footer-inner">
-            <div className="logo">Girls Civilization</div>
+            <div className="logo">
+              <span className="logo-mark" aria-hidden="true">🌸</span>
+              <span>Girls Civilization</span>
+            </div>
             <div className="footer-links">
               <a href="https://t.me/girlsciv" target="_blank" rel="noopener noreferrer">Telegram-канал</a>
               <a href="mailto:themepyshow@gmail.com">Почта</a>
