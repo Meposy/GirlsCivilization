@@ -19,7 +19,7 @@ const SERVERS = [
 ];
 
 const ServerStatus = () => {
-  const [statuses, setStatuses] = useState<any[]>(SERVERS); // Изначально показываем список
+  const [statuses, setStatuses] = useState<any[]>(SERVERS);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -28,18 +28,16 @@ const ServerStatus = () => {
         const results = await Promise.all(
           SERVERS.map(async (server) => {
             try {
-              const res = await fetch(`https://api.mcsrvstat.us/3/${server.host}`);
+              // Запрашиваем статус и пинг через mcstatus.io
+              const res = await fetch(`https://api.mcstatus.io/v2/status/java/${server.host}`);
               const data = await res.json();
 
-              // Замер пинга
-              const start = performance.now();
-              try {
-                await fetch(`https://${server.host}`, { mode: 'no-cors', cache: 'no-store' });
-              } catch (e) {}
-              const end = performance.now();
-              const ping = Math.round(end - start);
-
-              return { ...server, ...data, ping };
+              return {
+                ...server,
+                online: data.online,
+                players: data.players,
+                ping: data.ping ? Math.round(data.ping) : 0,
+              };
             } catch (err) {
               return { ...server, online: false, ping: 0 };
             }
