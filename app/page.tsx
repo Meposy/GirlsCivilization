@@ -232,6 +232,8 @@ export default function Home() {
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [weeks, setWeeks] = useState(1);
+  const [playerName, setPlayerName] = useState(''); // Стейт для ника
+  const [isSubmitting, setIsSubmitting] = useState(false); // Стейт для загрузки
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -377,6 +379,37 @@ export default function Home() {
 
   const formatMoney = (num: number) => new Intl.NumberFormat('ru-RU').format(num) + ' ₽';
 
+  // НОВАЯ ФУНКЦИЯ: Обработка оплаты
+  const handlePay = async () => {
+    if (!playerName.trim()) {
+      showToast('Пожалуйста, введи свой ник в Minecraft!');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const res = await fetch('/api/payment/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ weeks, playerName: playerName.trim() }),
+      });
+
+      const data = await res.json();
+      
+      if (data.url) {
+        window.location.href = data.url; // Перенаправляем на FreeKassa
+      } else {
+        showToast('Ошибка при создании платежа. Попробуй позже.');
+        setIsSubmitting(false);
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('Ошибка сети. Проверь подключение.');
+      setIsSubmitting(false);
+    }
+  };
+
   const handleModalKeyDown = useCallback((e: KeyboardEvent) => {
     if (e.key === 'Escape') {
       setIsModalOpen(false);
@@ -471,8 +504,6 @@ export default function Home() {
       <main id="main">
         <header className="hero">
           <div className="container">
-            
-            {/* Вот тут мы обернули плашки в контейнер, чтобы они не слипались */}
             <div className="hero-badges">
               <div className="hero-badge">Только для девушек</div>
               <div className="online-badge" data-state="online">
@@ -834,24 +865,62 @@ export default function Home() {
             aria-labelledby="support-modal-title"
           >
             <button type="button" className="modal-close" onClick={() => setIsModalOpen(false)} aria-label="Закрыть">×</button>
+            
             <h3 id="support-modal-title">Поддержать сервер</h3>
             <p className="modal-sub">Выбери количество недель. Роль и SP начислим автоматически после оплаты.</p>
+            
             <div className="weeks-row">
               <button type="button" className="weeks-btn" onClick={() => changeWeeks(-1)} disabled={weeks <= 1} aria-label="Уменьшить количество недель">−</button>
               <div className="weeks-num">{weeks}</div>
               <button type="button" className="weeks-btn" onClick={() => changeWeeks(1)} disabled={weeks >= 52} aria-label="Увеличить количество недель">+</button>
             </div>
             <div className="weeks-label">{weeks} {pluralizeWeeks(weeks)} поддержки</div>
+            
             <div className="price-display">
               <div className="price-total">{formatMoney(weeks * PRICE_PER_WEEK)}</div>
               <div className="price-detail">{weeks} × {formatMoney(PRICE_PER_WEEK)}</div>
               <div className="sp-total">+{weeks * SP_PER_WEEK} SP</div>
             </div>
-            <button type="button" className="btn-disabled" disabled>
-              Оплата скоро
+
+            {/* НОВОЕ ПОЛЕ: Ввод ника */}
+            <div style={{ marginBottom: '20px', textAlign: 'left' }}>
+              <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', color: 'var(--text-soft)' }}>
+                Твой ник в Minecraft
+              </label>
+              <input 
+                type="text" 
+                value={playerName}
+                onChange={(e) => setPlayerName(e.target.value)}
+                placeholder="Например: Liza_Craft"
+                style={{
+                  width: '100%', 
+                  padding: '14px 16px', 
+                  borderRadius: '12px', 
+                  border: '1px solid var(--line)',
+                  background: 'rgba(255,255,255,0.05)', 
+                  color: 'var(--text)',
+                  fontSize: '15px',
+                  outline: 'none',
+                  transition: 'border-color 0.2s'
+                }}
+                onFocus={(e) => e.target.style.borderColor = 'var(--pink)'}
+                onBlur={(e) => e.target.style.borderColor = 'var(--line)'}
+              />
+            </div>
+
+            {/* НОВАЯ КНОПКА: Вызов оплаты */}
+            <button 
+              type="button" 
+              className="btn btn-primary" 
+              style={{ width: '100%', justifyContent: 'center', fontSize: '17px', padding: '18px 32px' }}
+              onClick={handlePay}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Переход к оплате...' : `Оплатить ${formatMoney(weeks * PRICE_PER_WEEK)}`}
             </button>
+            
             <div className="modal-note">
-              <strong>Как это работает:</strong> оплата и выдача роли — автоматически через ЮKassa. Пока оплата не подключена — заходи позже.
+              <strong>Как это работает:</strong> после оплаты донат и роль начислятся автоматически в течение 1-2 минут. Игрок должен быть в сети.
             </div>
           </div>
         </div>
