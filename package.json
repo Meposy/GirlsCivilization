@@ -12,7 +12,8 @@
     "next": "16.4.2",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "recharts": "^2.15.0"
+    "recharts": "^2.15.0",
+    "rcon-client": "^4.2.5"
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "^4",
