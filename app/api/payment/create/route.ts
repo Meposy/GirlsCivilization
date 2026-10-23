@@ -12,6 +12,16 @@ const FK_IPS = [
 
 export async function POST(request: NextRequest) {
   try {
+    // --- НОВАЯ ПРОВЕРКА: защита от запросов с JSON (Vercel healthcheck, боты) ---
+    const contentType = request.headers.get('content-type') || '';
+    if (
+      !contentType.includes('application/x-www-form-urlencoded') &&
+      !contentType.includes('multipart/form-data')
+    ) {
+      console.warn('Webhook: Неверный Content-Type:', contentType);
+      return new NextResponse('bad content-type', { status: 400 });
+    }
+
     // 1. Проверка IP-адреса (защита от подделки запроса)
     const ip =
       request.headers.get('x-real-ip') ||
@@ -37,14 +47,13 @@ export async function POST(request: NextRequest) {
     const {
       MERCHANT_ID,
       AMOUNT,
-      intid,             // Уникальный ID операции в FreeKassa
-      MERCHANT_ORDER_ID, // ID заказа из твоего магазина
+      intid,
+      MERCHANT_ORDER_ID,
       SIGN,
-      us_weeks,          // Наши доп. параметры (передаем при создании платежа)
-      us_player_name,    // Ник игрока (передаем при создании платежа)
+      us_weeks,
+      us_player_name,
     } = data;
 
-    // Проверка, что пришли все обязательные поля
     if (!MERCHANT_ID || !AMOUNT || !MERCHANT_ORDER_ID || !SIGN) {
       return new NextResponse('bad request', { status: 400 });
     }
@@ -68,49 +77,35 @@ export async function POST(request: NextRequest) {
       return new NextResponse('wrong sign', { status: 403 });
     }
 
-    // 4. Проверка, что магазин совпадает
     if (MERCHANT_ID !== merchantId) {
       return new NextResponse('wrong merchant', { status: 403 });
     }
 
-    // 5. Проверка ника игрока
     if (!us_player_name) {
-       return new NextResponse('no player name', { status: 400 });
+      return new NextResponse('no player name', { status: 400 });
     }
 
     // 6. ВЫДАЧА ДОНАТА ЧЕРЕЗ RCON
     const weeks = parseInt(us_weeks || '0', 10);
-    const seconds = weeks * 7 * 24 * 60 * 60; // Переводим недели в секунды
+    const seconds = weeks * 7 * 24 * 60 * 60;
     
     console.log(`[FreeKassa] Успешная оплата! Игрок: ${us_player_name}, Недель: ${weeks} (${seconds} сек.)`);
 
     try {
-      // Подключаемся к RCON (данные берем из .env)
       const rcon = await Rcon.connect({
         host: process.env.MC_HOST || '127.0.0.1',
         port: parseInt(process.env.MC_RCON_PORT || '25575'),
         password: process.env.MC_RCON_PASSWORD || '',
       });
 
-      // Выполняем команду на сервере
       const response = await rcon.send(`givetempdonate ${us_player_name} ${seconds}`);
       console.log(`[RCON] Ответ сервера: ${response}`);
-
-      // ЗАКОММЕНТИРОВАНО: Если у тебя есть плагин, выдающий SP (например, NpcCharm),
-      // раскомментируй и поменяй команду на нужную.
-      // const spToGive = weeks * 50;
-      // await rcon.send(`give_sp ${us_player_name} ${spToGive}`);
       
       await rcon.end();
-
     } catch (rconError) {
       console.error('[FreeKassa] Ошибка RCON:', rconError);
-      // Если игрок офлайн, RCON выдаст ошибку. 
-      // Платеж прошел, но донат не выдан. 
-      // В будущем тут можно сделать запись в файл pending_donates.json
     }
 
-    // 7. ОБЯЗАТЕЛЬНО возвращаем "YES", чтобы FreeKassa перестала слать запросы
     return new NextResponse('YES', {
       status: 200,
       headers: { 'Content-Type': 'text/plain' },
